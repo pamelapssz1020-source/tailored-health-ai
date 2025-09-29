@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Apple, 
@@ -25,19 +26,22 @@ const Dashboard = () => {
         
         <nav className="space-y-2">
           {[
-            { icon: LayoutDashboard, label: "Dashboard", active: true },
-            { icon: Apple, label: "Nutrição", active: false },
-            { icon: Dumbbell, label: "Treinos", active: false },
-            { icon: TrendingUp, label: "Progresso", active: false },
-            { icon: User, label: "Perfil", active: false },
+            { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", active: true },
+            { icon: Apple, label: "Nutrição", path: "/nutrition", active: false },
+            { icon: Dumbbell, label: "Treinos", path: "/workouts", active: false },
+            { icon: TrendingUp, label: "Progresso", path: "/progress", active: false },
+            { icon: User, label: "Perfil", path: "/profile", active: false },
           ].map((item) => (
             <Button
               key={item.label}
               variant={item.active ? "secondary" : "ghost"}
               className="w-full justify-start"
+              asChild
             >
-              <item.icon className="mr-2 h-4 w-4" />
-              {item.label}
+              <Link to={item.path}>
+                <item.icon className="mr-2 h-4 w-4" />
+                {item.label}
+              </Link>
             </Button>
           ))}
         </nav>

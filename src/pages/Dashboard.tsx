@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
+import AICoachChat from "@/components/AICoachChat";
 import { 
   LayoutDashboard, 
   Apple, 
@@ -9,12 +12,16 @@ import {
   TrendingUp,
   Calendar,
   Target,
-  MessageSquare
+  MessageSquare,
+  Zap,
+  Award
 } from "lucide-react";
 
 const Dashboard = () => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/50 p-6 flex flex-col">
         <Link to="/" className="flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
@@ -56,29 +63,63 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="ml-64 p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Bem-vindo de volta! Aqui está seu resumo diário.</p>
+          <h1 className="text-4xl font-bold mb-2 gradient-hero bg-clip-text text-transparent">
+            Olá, Campeão! 💪
+          </h1>
+          <p className="text-muted-foreground">Pronto para dominar o dia? Aqui está seu resumo</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           {[
-            { label: "Calorias Hoje", value: "1,847", target: "2,200", icon: Target },
-            { label: "Treinos Semana", value: "3", target: "5", icon: Dumbbell },
-            { label: "Peso Atual", value: "72.5kg", target: "70kg", icon: TrendingUp },
-            { label: "Streak", value: "7 dias", target: "Contínuo", icon: Calendar },
+            { label: "Calorias Hoje", value: "1,847", target: "2,200", icon: Target, progress: 84, color: "neon-green" },
+            { label: "Treinos Semana", value: "3", target: "5", icon: Dumbbell, progress: 60, color: "neon-purple" },
+            { label: "Peso Atual", value: "72.5kg", target: "70kg", icon: TrendingUp, progress: 50, color: "neon-cyan" },
+            { label: "Streak", value: "7 dias", target: "30 dias", icon: Calendar, progress: 23, color: "neon-green" },
           ].map((stat) => (
-            <Card key={stat.label} className="shadow-card">
+            <Card key={stat.label} className="shadow-card hover:shadow-glow transition-all">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-3">
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <stat.icon className="h-4 w-4 text-primary" />
+                  <stat.icon className={`h-5 w-5 text-${stat.color}`} />
                 </div>
-                <p className="text-2xl font-bold mb-1">{stat.value}</p>
+                <p className="text-3xl font-bold mb-2">{stat.value}</p>
+                <Progress value={stat.progress} className="h-2 mb-2" />
                 <p className="text-xs text-muted-foreground">Meta: {stat.target}</p>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Link to="/nutrition">
+            <Card className="shadow-glow border-primary/30 hover:shadow-glow-purple transition-all cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Apple className="h-12 w-12 text-primary mx-auto mb-3" />
+                <h3 className="font-bold mb-1">Escanear Alimento</h3>
+                <p className="text-sm text-muted-foreground">Analise com IA</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/workouts">
+            <Card className="shadow-glow-purple border-secondary/30 hover:shadow-glow transition-all cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Dumbbell className="h-12 w-12 text-secondary mx-auto mb-3" />
+                <h3 className="font-bold mb-1">Iniciar Treino</h3>
+                <p className="text-sm text-muted-foreground">Plano do dia</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/progress">
+            <Card className="shadow-glow-cyan border-accent/30 hover:shadow-glow transition-all cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <TrendingUp className="h-12 w-12 text-accent mx-auto mb-3" />
+                <h3 className="font-bold mb-1">Ver Progresso</h3>
+                <p className="text-sm text-muted-foreground">Evolução</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Content Grid */}
@@ -138,12 +179,15 @@ const Dashboard = () => {
 
       {/* Floating AI Assistant */}
       <Button
-        variant="hero"
+        variant="default"
         size="icon"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-glow"
+        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-neon neon-pulse z-40"
+        onClick={() => setIsChatOpen(!isChatOpen)}
       >
-        <MessageSquare className="h-6 w-6" />
+        <MessageSquare className="h-7 w-7" />
       </Button>
+
+      <AICoachChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 };

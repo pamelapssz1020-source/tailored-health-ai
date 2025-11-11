@@ -17,20 +17,20 @@ const Navbar = () => {
           <Link to="/#features" className="text-sm font-medium hover:text-primary transition-colors">
             Funcionalidades
           </Link>
-          <Link to="/#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">
-            Como Funciona
+          <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+            Dashboard
           </Link>
-          <Link to="/#testimonials" className="text-sm font-medium hover:text-primary transition-colors">
-            Depoimentos
+          <Link to="/nutrition" className="text-sm font-medium hover:text-primary transition-colors">
+            Nutrição
           </Link>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild>
             <Link to="/login">Entrar</Link>
           </Button>
           <Button variant="hero" size="sm" asChild>
-            <Link to="/signup">Começar Grátis</Link>
+            <Link to="/dashboard">Ver App</Link>
           </Button>
         </div>
       </div>

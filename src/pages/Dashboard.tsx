@@ -16,18 +16,18 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/50 p-6">
-        <div className="flex items-center gap-2 mb-8">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/50 p-6 flex flex-col">
+        <Link to="/" className="flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
           <div className="h-10 w-10 rounded-lg gradient-hero flex items-center justify-center">
             <span className="text-white font-bold text-lg">HA</span>
           </div>
           <span className="font-bold">Health AI Coach</span>
-        </div>
+        </Link>
         
-        <nav className="space-y-2">
+        <nav className="space-y-2 flex-1">
           {[
             { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", active: true },
-            { icon: Apple, label: "Nutrição", path: "/nutrition", active: false },
+            { icon: Apple, label: "Nutrição & Scanner", path: "/nutrition", active: false },
             { icon: Dumbbell, label: "Treinos", path: "/workouts", active: false },
             { icon: TrendingUp, label: "Progresso", path: "/progress", active: false },
             { icon: User, label: "Perfil", path: "/profile", active: false },
@@ -45,6 +45,12 @@ const Dashboard = () => {
             </Button>
           ))}
         </nav>
+
+        <div className="pt-4 border-t border-border">
+          <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
+            <Link to="/">← Voltar ao Início</Link>
+          </Button>
+        </div>
       </aside>
 
       {/* Main Content */}

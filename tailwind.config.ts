@@ -30,9 +30,11 @@ export default {
           glow: "hsl(var(--secondary-glow))",
         },
         neon: {
-          green: "hsl(var(--neon-green))",
-          purple: "hsl(var(--neon-purple))",
+          blue: "hsl(var(--neon-blue))",
           cyan: "hsl(var(--neon-cyan))",
+        },
+        metallic: {
+          blue: "hsl(var(--metallic-blue))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

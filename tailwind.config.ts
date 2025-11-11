@@ -17,8 +17,14 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: {
+          DEFAULT: "hsl(var(--background))",
+          secondary: "hsl(var(--background-secondary))",
+        },
+        foreground: {
+          DEFAULT: "hsl(var(--foreground))",
+          secondary: "hsl(var(--foreground-secondary))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -29,12 +35,14 @@ export default {
           foreground: "hsl(var(--secondary-foreground))",
           glow: "hsl(var(--secondary-glow))",
         },
-        neon: {
-          blue: "hsl(var(--neon-blue))",
-          cyan: "hsl(var(--neon-cyan))",
-        },
         metallic: {
           blue: "hsl(var(--metallic-blue))",
+        },
+        electric: {
+          blue: "hsl(var(--electric-blue))",
+        },
+        neon: {
+          cyan: "hsl(var(--neon-cyan))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

@@ -13,6 +13,7 @@ import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 import FitnessProfile from "./pages/FitnessProfile";
 import NutritionistAI from "./pages/NutritionistAI";
+import MenstrualCycle from "./pages/MenstrualCycle";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/progress" element={<Progress />} />
           <Route path="/fitness-profile" element={<FitnessProfile />} />
           <Route path="/nutritionist-ai" element={<NutritionistAI />} />
+          <Route path="/menstrual-cycle" element={<MenstrualCycle />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -160,29 +160,54 @@ const FoodResults = ({ imageData, foodData, onCorrect, onSave }: FoodResultsProp
         )}
       </Card>
 
-      {/* Portion Adjuster */}
-      <Card className="shadow-card">
+      {/* Weight Adjuster - Enhanced */}
+      <Card className="shadow-card border-primary/20">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Ajustar Quantidade</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            Ajustar Peso do Alimento
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Porção</span>
-              <span className="font-semibold text-primary">{portion}g</span>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Peso estimado pela IA</span>
+                <span className="font-semibold text-primary text-lg">{portion}g</span>
+              </div>
+              <Slider
+                value={[portion]}
+                onValueChange={(value) => setPortion(value[0])}
+                min={10}
+                max={500}
+                step={5}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>10g</span>
+                <span>500g</span>
+              </div>
             </div>
-            <Slider
-              value={[portion]}
-              onValueChange={(value) => setPortion(value[0])}
-              min={25}
-              max={400}
-              step={25}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>25g</span>
-              <span>400g</span>
-            </div>
+          </div>
+          
+          {/* Quick presets */}
+          <div className="flex gap-2">
+            {[50, 100, 150, 200].map((preset) => (
+              <Button
+                key={preset}
+                variant="outline"
+                size="sm"
+                onClick={() => setPortion(preset)}
+                className={portion === preset ? "border-primary" : ""}
+              >
+                {preset}g
+              </Button>
+            ))}
+          </div>
+
+          <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+            <p className="text-xs text-muted-foreground mb-1">💡 Dica</p>
+            <p className="text-xs">Use uma balança para maior precisão ou compare com referências conhecidas (ex: 1 maçã ≈ 180g)</p>
           </div>
         </CardContent>
       </Card>

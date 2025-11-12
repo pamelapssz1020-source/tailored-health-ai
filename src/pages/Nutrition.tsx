@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import FoodScanner from "@/components/FoodScanner/FoodScanner";
 import NutritionDiary from "@/components/Nutrition/NutritionDiary";
+import { DietPlanView } from "@/components/Nutrition/DietPlanView";
+import { NoPlanCTA } from "@/components/Nutrition/NoPlanCTA";
 import { 
   Camera, 
   Calendar,
@@ -15,6 +17,33 @@ import {
 } from "lucide-react";
 
 const Nutrition = () => {
+  const [hasPlan, setHasPlan] = useState(false);
+  const [planData, setPlanData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkForSavedPlan();
+  }, []);
+
+  const checkForSavedPlan = () => {
+    try {
+      const savedPlan = localStorage.getItem("user-diet-plan");
+      
+      if (savedPlan) {
+        const parsedPlan = JSON.parse(savedPlan);
+        setHasPlan(true);
+        setPlanData(parsedPlan);
+      } else {
+        setHasPlan(false);
+      }
+    } catch (error) {
+      console.error("Error loading plan:", error);
+      setHasPlan(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Mock data - in production, this would come from database
   const [dailyGoals] = useState({
     calories: 2200,
@@ -87,6 +116,17 @@ const Nutrition = () => {
     // In production: open edit modal
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Header */}
@@ -94,12 +134,25 @@ const Nutrition = () => {
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold mb-2">Nutrição</h1>
           <p className="text-muted-foreground">
-            Acompanhe sua alimentação com inteligência artificial
+            {hasPlan 
+              ? "Acompanhe seu plano alimentar personalizado"
+              : "Acompanhe sua alimentação com inteligência artificial"
+            }
           </p>
         </div>
       </div>
 
       <div className="container mx-auto p-4 space-y-6">
+        {/* Show Plan View or CTA */}
+        {hasPlan && planData ? (
+          <DietPlanView 
+            plan={planData.plan} 
+            profile={planData.profile}
+            createdAt={planData.createdAt}
+          />
+        ) : (
+          <>
+            <NoPlanCTA />
         {/* Today's Summary - Enhanced */}
         <div className="grid md:grid-cols-4 gap-4">
           <Card className="shadow-card border-primary/20">
@@ -202,60 +255,37 @@ const Nutrition = () => {
           </Card>
         </div>
 
-        {/* AI Nutritionist CTA */}
-        <Card className="shadow-elevated bg-gradient-primary border-primary/30">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Consulta com Nutricionista IA
-                </h3>
-                <p className="text-white/90">
-                  Receba um plano alimentar 100% personalizado baseado nos seus objetivos, 
-                  preferências e rotina. Nossa IA nutricionista vai te guiar passo a passo!
-                </p>
-              </div>
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                className="hover-glow whitespace-nowrap"
-                onClick={() => window.location.href = '/nutritionist-ai'}
-              >
-                Iniciar Consulta IA
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Main Scanner Area */}
+            <Card className="shadow-elevated">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="h-5 w-5 text-primary" />
+                  Escanear Alimento
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FoodScanner />
+              </CardContent>
+            </Card>
 
-        {/* Main Scanner Area */}
-        <Card className="shadow-elevated">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Camera className="h-5 w-5 text-primary" />
-              Escanear Alimento
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FoodScanner />
-          </CardContent>
-        </Card>
-
-        {/* Diary with Detailed Entries */}
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              Diário Alimentar de Hoje
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <NutritionDiary 
-              entries={diaryEntries}
-              onDelete={handleDeleteEntry}
-              onEdit={handleEditEntry}
-            />
-          </CardContent>
-        </Card>
+            {/* Diary with Detailed Entries */}
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Diário Alimentar de Hoje
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <NutritionDiary 
+                  entries={diaryEntries}
+                  onDelete={handleDeleteEntry}
+                  onEdit={handleEditEntry}
+                />
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     </div>
   );

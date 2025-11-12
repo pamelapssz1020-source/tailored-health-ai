@@ -6,213 +6,371 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, User } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Send, User, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { DietPlanDisplay } from "@/components/Nutrition/DietPlanDisplay";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   options?: string[];
-  inputType?: "text" | "textarea" | "buttons";
+  inputType?: "text" | "textarea" | "buttons" | "checkboxes";
+}
+
+interface UserProfile {
+  objetivo: string;
+  idade: number;
+  pesoAtual: number;
+  altura: number;
+  pesoObjetivo?: number;
+  nivelAtividade: string;
+  restricoes: string[];
+  restricoesOutras?: string;
+  alimentosAmados: string;
+  alimentosOdiados: string;
+  numRefeicoes: number;
+  horarioAcordar: string;
+  horarioDormir: string;
+  preferenciasHorarios?: string;
+  condicoesSaude?: string;
+  tempoPreparacao: string;
+  suplementos?: string;
 }
 
 interface ConversationState {
   phase: number;
-  userData: {
-    name?: string;
-    goal?: string;
-    meals?: string;
-    schedule?: string;
-    cooking?: string;
-    time?: string;
-    lovesFoods?: string;
-    hatesFoods?: string;
-    allergies?: string;
-    diet?: string;
-    snacks?: string;
-    alcohol?: string;
-    cheatDays?: string;
-    water?: string;
-    currentWeight?: string;
-    targetWeight?: string;
-    deadline?: string;
-    dailyMeals?: string;
-  };
+  currentQuestion: string;
+  userData: Partial<UserProfile>;
 }
 
 const NutritionistAI = () => {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Olá! Sou sua nutricionista IA. Como posso te chamar?",
-      inputType: "text",
+      content: "Olá! 👋 Sou a Dra. Ana, sua nutricionista pessoal com IA. Vou criar um plano alimentar 100% personalizado para você. Qual é o seu principal objetivo?",
+      options: [
+        "Emagrecer e Perder Peso",
+        "Ganhar Massa Muscular",
+        "Manter Peso Atual",
+        "Definir e Tonificar",
+        "Melhorar Saúde Geral",
+      ],
+      inputType: "buttons",
     },
   ]);
   const [input, setInput] = useState("");
   const [conversation, setConversation] = useState<ConversationState>({
-    phase: 1,
+    phase: 0,
+    currentQuestion: "objetivo",
     userData: {},
   });
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [dietPlan, setDietPlan] = useState<any>(null);
+  const [selectedRestrictions, setSelectedRestrictions] = useState<string[]>([]);
 
   const conversationFlow = [
-    // Phase 1 - Nome
+    // Etapa 1 - Objetivo (já mostrado inicialmente)
     {
-      question: "Prazer, {name}! Qual seu principal objetivo nutricional?",
+      field: "objetivo",
+      nextQuestion: "Perfeito! Para criar seu plano ideal, preciso conhecer você melhor. Qual sua idade?",
+      inputType: "text" as const,
+      nextField: "idade",
+    },
+    {
+      field: "idade",
+      nextQuestion: "Qual seu peso atual? (em kg)",
+      inputType: "text" as const,
+      nextField: "pesoAtual",
+    },
+    {
+      field: "pesoAtual",
+      nextQuestion: "E sua altura? (em cm)",
+      inputType: "text" as const,
+      nextField: "altura",
+    },
+    {
+      field: "altura",
+      nextQuestion: "Qual seu peso objetivo? (em kg)",
+      inputType: "text" as const,
+      nextField: "pesoObjetivo",
+      condition: (userData: any) => 
+        userData.objetivo?.includes("Emagrecer") || userData.objetivo?.includes("Ganhar"),
+    },
+    {
+      field: "pesoObjetivo",
+      nextQuestion: "Como você descreveria seu nível de atividade física no dia a dia?",
       options: [
-        "Emagrecer e perder gordura",
-        "Ganhar massa muscular",
-        "Manter peso e definir",
-        "Melhorar performance esportiva",
-        "Saúde e bem-estar geral",
+        "Sedentário (trabalho sentado, pouco movimento)",
+        "Levemente Ativo (exercícios leves 1-2x/semana)",
+        "Moderadamente Ativo (exercícios 3-4x/semana)",
+        "Muito Ativo (exercícios intensos 5-6x/semana)",
+        "Extremamente Ativo (atleta, treina 2x/dia)",
       ],
-      field: "goal",
-    },
-    // Phase 2 - Rotina
-    {
-      question: "Me conte sobre sua rotina atual. Quantas refeições faz por dia?",
-      options: ["1-2 refeições", "3-4 refeições", "5+ refeições"],
-      field: "meals",
+      inputType: "buttons" as const,
+      nextField: "nivelAtividade",
     },
     {
-      question: "Tem algum horário fixo para se alimentar?",
-      inputType: "text",
-      field: "schedule",
+      field: "nivelAtividade",
+      nextQuestion: "Você tem alguma restrição alimentar, alergia ou condição especial? (Marque todas que se aplicam)",
+      options: [
+        "Intolerância à Lactose",
+        "Intolerância ao Glúten/Celíaco",
+        "Vegetariano",
+        "Vegano",
+        "Diabetes",
+        "Hipertensão",
+        "Sem restrições",
+      ],
+      inputType: "checkboxes" as const,
+      nextField: "restricoes",
     },
     {
-      question: "Cozinha em casa ou come mais fora?",
-      options: ["Sempre cozinho em casa", "Metade casa, metade fora", "Sempre como fora"],
-      field: "cooking",
+      field: "restricoes",
+      nextQuestion: "Quais alimentos você AMA e não abre mão? (me conte seus favoritos!)",
+      inputType: "textarea" as const,
+      nextField: "alimentosAmados",
     },
     {
-      question: "Tem tempo para preparar refeições?",
-      options: ["Sim, tenho bastante tempo", "Tenho tempo limitado", "Não tenho tempo"],
-      field: "time",
-    },
-    // Phase 3 - Preferências
-    {
-      question: "Vamos falar sobre seus gostos. Quais alimentos você AMA e não abre mão?",
-      inputType: "textarea",
-      field: "lovesFoods",
+      field: "alimentosAmados",
+      nextQuestion: "E quais alimentos você ODEIA ou prefere evitar?",
+      inputType: "textarea" as const,
+      nextField: "alimentosOdiados",
     },
     {
-      question: "Quais alimentos NÃO GOSTA ou evita?",
-      inputType: "textarea",
-      field: "hatesFoods",
-    },
-    {
-      question: "Tem alergias ou intolerâncias?",
-      options: ["Lactose", "Glúten", "Ambos", "Outras", "Nenhuma"],
-      field: "allergies",
-    },
-    {
-      question: "Segue alguma dieta específica?",
-      options: ["Vegetariana", "Vegana", "Low carb", "Cetogênica", "Nenhuma"],
-      field: "diet",
-    },
-    // Phase 4 - Hábitos
-    {
-      question: "Para personalizar melhor, me conte: Costuma beliscar entre refeições?",
-      options: ["Sim, frequentemente", "Às vezes", "Raramente", "Nunca"],
-      field: "snacks",
-    },
-    {
-      question: "Consome bebidas alcóolicas? Quantas vezes por semana?",
-      options: ["Não bebo", "1-2 vezes/semana", "3-4 vezes/semana", "5+ vezes/semana"],
-      field: "alcohol",
-    },
-    {
-      question: "Tem 'dias do lixo' ou come doces com frequência?",
-      options: ["Sim, toda semana", "De vez em quando", "Raramente", "Nunca"],
-      field: "cheatDays",
-    },
-    {
-      question: "Bebe quantos litros de água por dia?",
-      options: ["Menos de 1L", "1-2L", "2-3L", "Mais de 3L"],
-      field: "water",
-    },
-    // Phase 5 - Metas
-    {
-      question: "Últimas perguntas para fechar seu plano. Qual seu peso atual em kg?",
-      inputType: "text",
-      field: "currentWeight",
-    },
-    {
-      question: "Qual seu peso desejado em kg?",
-      inputType: "text",
-      field: "targetWeight",
-    },
-    {
-      question: "Em quantas semanas deseja atingir esse objetivo?",
-      inputType: "text",
-      field: "deadline",
-    },
-    {
-      question: "Está disposto(a) a fazer quantas refeições diárias?",
+      field: "alimentosOdiados",
+      nextQuestion: "Quantas refeições por dia você prefere fazer?",
       options: ["3 refeições", "4 refeições", "5 refeições", "6 refeições"],
-      field: "dailyMeals",
+      inputType: "buttons" as const,
+      nextField: "numRefeicoes",
+    },
+    {
+      field: "numRefeicoes",
+      nextQuestion: "A que horas você geralmente acorda?",
+      inputType: "text" as const,
+      nextField: "horarioAcordar",
+    },
+    {
+      field: "horarioAcordar",
+      nextQuestion: "E a que horas costuma ir dormir?",
+      inputType: "text" as const,
+      nextField: "horarioDormir",
+    },
+    {
+      field: "horarioDormir",
+      nextQuestion: "Tem algum horário preferido para refeições principais? (opcional)",
+      inputType: "textarea" as const,
+      nextField: "preferenciasHorarios",
+    },
+    {
+      field: "preferenciasHorarios",
+      nextQuestion: "Você tem alguma condição de saúde que eu deva considerar? (opcional)",
+      inputType: "textarea" as const,
+      nextField: "condicoesSaude",
+    },
+    {
+      field: "condicoesSaude",
+      nextQuestion: "Quanto tempo você tem disponível para preparar refeições?",
+      options: [
+        "Muito pouco (refeições rápidas)",
+        "Cerca de 30 minutos por dia",
+        "1 hora ou mais por dia",
+        "Adoro cozinhar, tenho tempo!",
+      ],
+      inputType: "buttons" as const,
+      nextField: "tempoPreparacao",
+    },
+    {
+      field: "tempoPreparacao",
+      nextQuestion: "Você toma algum suplemento ou medicamento regularmente? (opcional)",
+      inputType: "textarea" as const,
+      nextField: "suplementos",
     },
   ];
 
-  const handleSendMessage = (text?: string) => {
+  const handleSendMessage = async (text?: string) => {
     const messageText = text || input;
-    if (!messageText.trim()) return;
+    if (!messageText.trim() && conversation.currentQuestion !== "restricoes") return;
 
     // Add user message
-    const newMessages: Message[] = [
-      ...messages,
-      { role: "user", content: messageText },
-    ];
+    const newMessages: Message[] = [...messages, { role: "user", content: messageText }];
 
-    // Update conversation state
-    const currentPhase = conversation.phase;
-    const currentFlow = conversationFlow[currentPhase - 1];
+    // Update user data
+    const updatedUserData = { ...conversation.userData };
     
-    const updatedUserData = {
-      ...conversation.userData,
-    };
-
-    if (currentPhase === 1) {
-      updatedUserData.name = messageText;
-    } else if (currentFlow) {
-      updatedUserData[currentFlow.field as keyof typeof updatedUserData] = messageText;
+    if (conversation.currentQuestion === "restricoes") {
+      updatedUserData.restricoes = selectedRestrictions;
+    } else if (conversation.currentQuestion === "numRefeicoes") {
+      updatedUserData.numRefeicoes = parseInt(messageText.split(" ")[0]);
+    } else if (["idade", "pesoAtual", "altura", "pesoObjetivo"].includes(conversation.currentQuestion)) {
+      (updatedUserData as any)[conversation.currentQuestion] = parseFloat(messageText);
+    } else {
+      (updatedUserData as any)[conversation.currentQuestion] = messageText;
     }
 
-    // Add AI response
-    if (currentPhase <= conversationFlow.length) {
-      const nextFlow = conversationFlow[currentPhase];
-      if (nextFlow) {
-        let aiMessage = nextFlow.question;
-        if (aiMessage.includes("{name}")) {
-          aiMessage = aiMessage.replace("{name}", updatedUserData.name || "");
-        }
+    // Find next step
+    let nextStepIndex = conversationFlow.findIndex(
+      (step) => step.field === conversation.currentQuestion
+    );
 
+    // Skip conditional steps
+    do {
+      nextStepIndex++;
+    } while (
+      nextStepIndex < conversationFlow.length &&
+      conversationFlow[nextStepIndex].condition &&
+      !conversationFlow[nextStepIndex].condition!(updatedUserData)
+    );
+
+    if (nextStepIndex < conversationFlow.length) {
+      const nextStep = conversationFlow[nextStepIndex];
+      newMessages.push({
+        role: "assistant",
+        content: nextStep.nextQuestion || "",
+        options: nextStep.options,
+        inputType: nextStep.inputType,
+      });
+
+      setMessages(newMessages);
+      setConversation({
+        phase: conversation.phase + 1,
+        currentQuestion: nextStep.nextField || "",
+        userData: updatedUserData,
+      });
+      setInput("");
+      setSelectedRestrictions([]);
+    } else {
+      // Fim do questionário - gerar plano
+      newMessages.push({
+        role: "assistant",
+        content:
+          "Perfeito! 🎉\n\nTenho todas as informações que preciso. Vou analisar seu perfil e criar um plano alimentar exclusivo para você. Isso levará cerca de 15 segundos...",
+      });
+      setMessages(newMessages);
+      setIsGenerating(true);
+
+      try {
+        const { data, error } = await supabase.functions.invoke("generate-diet-plan", {
+          body: { userProfile: updatedUserData },
+        });
+
+        if (error) throw error;
+
+        if (data.success) {
+          setDietPlan(data.dietPlan);
+          
+          // Salvar no localStorage
+          localStorage.setItem(
+            "user-diet-plan",
+            JSON.stringify({
+              profile: updatedUserData,
+              plan: data.dietPlan,
+              createdAt: new Date().toISOString(),
+            })
+          );
+
+          toast({
+            title: "Plano Criado! 🎉",
+            description: "Seu plano alimentar personalizado está pronto!",
+          });
+        }
+      } catch (error: any) {
+        console.error("Error generating diet plan:", error);
+        toast({
+          title: "Erro ao Gerar Plano",
+          description: error.message || "Tente novamente em alguns instantes.",
+          variant: "destructive",
+        });
+        
         newMessages.push({
           role: "assistant",
-          content: aiMessage,
-          options: nextFlow.options,
-          inputType: (nextFlow.inputType || (nextFlow.options ? "buttons" : "text")) as "text" | "textarea" | "buttons",
+          content: "Desculpe, ocorreu um erro ao gerar seu plano. Pode tentar novamente?",
         });
-      } else {
-        // Fim do questionário
-        newMessages.push({
-          role: "assistant",
-          content: `Perfeito, ${updatedUserData.name}! 🎉\n\nVou gerar seu plano alimentar personalizado baseado em todas as informações que me passou. Isso levará alguns segundos...\n\nVocê será redirecionado para seu cronograma nutricional em breve!`,
-        });
+        setMessages(newMessages);
+      } finally {
+        setIsGenerating(false);
       }
     }
-
-    setMessages(newMessages);
-    setConversation({
-      phase: currentPhase + 1,
-      userData: updatedUserData,
-    });
-    setInput("");
   };
 
   const handleOptionClick = (option: string) => {
     handleSendMessage(option);
   };
 
-  const progressPercentage = (conversation.phase / (conversationFlow.length + 1)) * 100;
+  const handleRestrictionToggle = (restriction: string) => {
+    setSelectedRestrictions((prev) =>
+      prev.includes(restriction)
+        ? prev.filter((r) => r !== restriction)
+        : [...prev, restriction]
+    );
+  };
+
+  const handleSavePlan = () => {
+    toast({
+      title: "Plano Salvo!",
+      description: "Seu plano alimentar foi salvo com sucesso.",
+    });
+  };
+
+  const handleAdjustPlan = () => {
+    setDietPlan(null);
+    toast({
+      title: "Ajustando Plano",
+      description: "Você pode refazer o questionário para ajustar seu plano.",
+    });
+  };
+
+  const handleNewQuestionnaire = () => {
+    setDietPlan(null);
+    setMessages([
+      {
+        role: "assistant",
+        content: "Olá! 👋 Vou criar um novo plano alimentar para você. Qual é o seu principal objetivo?",
+        options: [
+          "Emagrecer e Perder Peso",
+          "Ganhar Massa Muscular",
+          "Manter Peso Atual",
+          "Definir e Tonificar",
+          "Melhorar Saúde Geral",
+        ],
+        inputType: "buttons",
+      },
+    ]);
+    setConversation({
+      phase: 0,
+      currentQuestion: "objetivo",
+      userData: {},
+    });
+  };
+
+  const progressPercentage = (conversation.phase / conversationFlow.length) * 100;
+
+  if (dietPlan) {
+    return (
+      <div className="min-h-screen bg-muted/30">
+        <div className="bg-card border-b border-border/50 px-4 py-6">
+          <div className="container mx-auto">
+            <h1 className="text-3xl font-bold mb-2">Seu Plano Alimentar</h1>
+            <p className="text-muted-foreground">
+              Criado especialmente para você pela Dra. Ana
+            </p>
+          </div>
+        </div>
+
+        <div className="container mx-auto p-4 max-w-6xl">
+          <DietPlanDisplay
+            dietPlan={dietPlan}
+            onSave={handleSavePlan}
+            onAdjust={handleAdjustPlan}
+            onNewQuestionnaire={handleNewQuestionnaire}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -280,7 +438,7 @@ const NutritionistAI = () => {
                       <p className="text-sm whitespace-pre-line">{message.content}</p>
                       
                       {/* Options Buttons */}
-                      {message.options && message.role === "assistant" && (
+                      {message.options && message.role === "assistant" && message.inputType === "buttons" && (
                         <div className="mt-4 space-y-2">
                           {message.options.map((option, optIndex) => (
                             <Button
@@ -294,6 +452,34 @@ const NutritionistAI = () => {
                           ))}
                         </div>
                       )}
+                      
+                      {/* Checkboxes for restrictions */}
+                      {message.options && message.role === "assistant" && message.inputType === "checkboxes" && (
+                        <div className="mt-4 space-y-3">
+                          {message.options.map((option, optIndex) => (
+                            <div key={optIndex} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`restriction-${optIndex}`}
+                                checked={selectedRestrictions.includes(option)}
+                                onCheckedChange={() => handleRestrictionToggle(option)}
+                              />
+                              <Label
+                                htmlFor={`restriction-${optIndex}`}
+                                className="text-sm cursor-pointer"
+                              >
+                                {option}
+                              </Label>
+                            </div>
+                          ))}
+                          <Button
+                            onClick={() => handleSendMessage(selectedRestrictions.join(", "))}
+                            className="w-full mt-4"
+                            disabled={selectedRestrictions.length === 0}
+                          >
+                            Continuar
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -302,7 +488,12 @@ const NutritionistAI = () => {
 
             {/* Input Area */}
             <div className="border-t border-border/50 p-4">
-              {messages[messages.length - 1]?.inputType === "textarea" ? (
+              {isGenerating ? (
+                <div className="flex items-center justify-center gap-2 p-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  <span className="text-muted-foreground">Gerando seu plano personalizado...</span>
+                </div>
+              ) : messages[messages.length - 1]?.inputType === "checkboxes" ? null : messages[messages.length - 1]?.inputType === "textarea" ? (
                 <div className="flex gap-2">
                   <Textarea
                     value={input}

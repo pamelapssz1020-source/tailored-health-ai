@@ -18,6 +18,17 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    // Validar campos obrigatórios
+    const requiredFields = ['objetivo', 'idade', 'pesoAtual', 'altura', 'nivelAtividade', 'numRefeicoes'];
+    const missingFields = requiredFields.filter(field => !userProfile[field]);
+    
+    if (missingFields.length > 0) {
+      return new Response(
+        JSON.stringify({ error: `Campos obrigatórios faltando: ${missingFields.join(', ')}` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Calcular TMB e gasto calórico
     const isMale = true; // Poderia vir do perfil
     const tmb = isMale 

@@ -101,6 +101,21 @@ const NutritionistAI = () => {
         userData.objetivo?.includes("Emagrecer") || userData.objetivo?.includes("Ganhar"),
     },
     {
+      field: "altura",
+      nextQuestion: "Como você descreveria seu nível de atividade física no dia a dia?",
+      options: [
+        "Sedentário (trabalho sentado, pouco movimento)",
+        "Levemente Ativo (exercícios leves 1-2x/semana)",
+        "Moderadamente Ativo (exercícios 3-4x/semana)",
+        "Muito Ativo (exercícios intensos 5-6x/semana)",
+        "Extremamente Ativo (atleta, treina 2x/dia)",
+      ],
+      inputType: "buttons" as const,
+      nextField: "nivelAtividade",
+      condition: (userData: any) => 
+        !userData.objetivo?.includes("Emagrecer") && !userData.objetivo?.includes("Ganhar"),
+    },
+    {
       field: "pesoObjetivo",
       nextQuestion: "Como você descreveria seu nível de atividade física no dia a dia?",
       options: [
@@ -253,8 +268,20 @@ const NutritionistAI = () => {
       setIsGenerating(true);
 
       try {
+        // Ensure all required fields have values
+        const completeUserData = {
+          ...updatedUserData,
+          restricoes: updatedUserData.restricoes || ["Sem restrições"],
+          alimentosAmados: updatedUserData.alimentosAmados || "",
+          alimentosOdiados: updatedUserData.alimentosOdiados || "",
+          numRefeicoes: updatedUserData.numRefeicoes || 5,
+          horarioAcordar: updatedUserData.horarioAcordar || "07:00",
+          horarioDormir: updatedUserData.horarioDormir || "22:00",
+          tempoPreparacao: updatedUserData.tempoPreparacao || "Cerca de 30 minutos por dia",
+        };
+
         const { data, error } = await supabase.functions.invoke("generate-diet-plan", {
-          body: { userProfile: updatedUserData },
+          body: { userProfile: completeUserData },
         });
 
         if (error) throw error;
@@ -279,15 +306,20 @@ const NutritionistAI = () => {
         }
       } catch (error: any) {
         console.error("Error generating diet plan:", error);
+        
+        const errorMessage = error?.message || 
+                           error?.error || 
+                           "Tente novamente em alguns instantes.";
+        
         toast({
           title: "Erro ao Gerar Plano",
-          description: error.message || "Tente novamente em alguns instantes.",
+          description: errorMessage,
           variant: "destructive",
         });
         
         newMessages.push({
           role: "assistant",
-          content: "Desculpe, ocorreu um erro ao gerar seu plano. Pode tentar novamente?",
+          content: `Desculpe, ocorreu um erro ao gerar seu plano: ${errorMessage}\n\nPode tentar novamente?`,
         });
         setMessages(newMessages);
       } finally {

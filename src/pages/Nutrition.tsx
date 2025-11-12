@@ -202,6 +202,31 @@ const Nutrition = () => {
           </Card>
         </div>
 
+        {/* AI Nutritionist CTA */}
+        <Card className="shadow-elevated bg-gradient-primary border-primary/30">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  Consulta com Nutricionista IA
+                </h3>
+                <p className="text-white/90">
+                  Receba um plano alimentar 100% personalizado baseado nos seus objetivos, 
+                  preferências e rotina. Nossa IA nutricionista vai te guiar passo a passo!
+                </p>
+              </div>
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="hover-glow whitespace-nowrap"
+                onClick={() => window.location.href = '/nutritionist-ai'}
+              >
+                Iniciar Consulta IA
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Main Scanner Area */}
         <Card className="shadow-elevated">
           <CardHeader>

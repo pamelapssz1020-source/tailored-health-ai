@@ -6,6 +6,8 @@ export interface CycleConfig {
   sintomas: string[];
   outrosSintomas?: string;
   insightsEnabled: boolean;
+  lembretes?: boolean;
+  adaptarTreinos?: boolean;
   configuradoEm: string;
 }
 

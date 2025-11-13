@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { 
   Camera, 
@@ -30,6 +30,17 @@ import workoutImage from "@/assets/workout-demo.jpg";
 import aiAssistantImage from "@/assets/ai-assistant.jpg";
 
 const Landing = () => {
+  const navigate = useNavigate();
+  
+  const handleCycleClick = () => {
+    const config = localStorage.getItem('menstrual-cycle-config');
+    if (config) {
+      navigate('/cycle/dashboard');
+    } else {
+      navigate('/cycle/setup');
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -450,7 +461,10 @@ const Landing = () => {
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Calendário Menstrual */}
-            <Card className="border-primary/30 hover:shadow-glow transition-all">
+            <Card 
+              className="border-primary/30 hover:shadow-glow transition-all cursor-pointer hover:scale-105"
+              onClick={handleCycleClick}
+            >
               <CardContent className="p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 rounded-lg bg-primary/20">

@@ -23,6 +23,9 @@ const Navbar = () => {
           <Link to="/nutrition" className="text-sm font-medium hover:text-primary transition-colors">
             Nutrição
           </Link>
+          <Link to="/medications" className="text-sm font-medium hover:text-primary transition-colors">
+            Medicamentos
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">

@@ -16,6 +16,7 @@ import NutritionistAI from "./pages/NutritionistAI";
 import MenstrualCycle from "./pages/MenstrualCycle";
 import CycleSetup from "./pages/CycleSetup";
 import CycleDashboard from "./pages/CycleDashboard";
+import Medications from "./pages/Medications";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/menstrual-cycle" element={<MenstrualCycle />} />
           <Route path="/cycle/setup" element={<CycleSetup />} />
           <Route path="/cycle/dashboard" element={<CycleDashboard />} />
+          <Route path="/medications" element={<Medications />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

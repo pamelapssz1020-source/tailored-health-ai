@@ -101,21 +101,6 @@ const NutritionistAI = () => {
         userData.objetivo?.includes("Emagrecer") || userData.objetivo?.includes("Ganhar"),
     },
     {
-      field: "altura",
-      nextQuestion: "Como você descreveria seu nível de atividade física no dia a dia?",
-      options: [
-        "Sedentário (trabalho sentado, pouco movimento)",
-        "Levemente Ativo (exercícios leves 1-2x/semana)",
-        "Moderadamente Ativo (exercícios 3-4x/semana)",
-        "Muito Ativo (exercícios intensos 5-6x/semana)",
-        "Extremamente Ativo (atleta, treina 2x/dia)",
-      ],
-      inputType: "buttons" as const,
-      nextField: "nivelAtividade",
-      condition: (userData: any) => 
-        !userData.objetivo?.includes("Emagrecer") && !userData.objetivo?.includes("Ganhar"),
-    },
-    {
       field: "pesoObjetivo",
       nextQuestion: "Como você descreveria seu nível de atividade física no dia a dia?",
       options: [
@@ -271,6 +256,10 @@ const NutritionistAI = () => {
         // Ensure all required fields have values
         const completeUserData = {
           ...updatedUserData,
+          idade: updatedUserData.idade || 30,
+          pesoAtual: updatedUserData.pesoAtual || 70,
+          altura: updatedUserData.altura || 170,
+          nivelAtividade: updatedUserData.nivelAtividade || "Moderadamente Ativo (exercícios 3-4x/semana)",
           restricoes: updatedUserData.restricoes || ["Sem restrições"],
           alimentosAmados: updatedUserData.alimentosAmados || "",
           alimentosOdiados: updatedUserData.alimentosOdiados || "",

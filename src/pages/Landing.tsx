@@ -24,7 +24,7 @@ import {
   Sparkles,
   Shield
 } from "lucide-react";
-import heroImage from "@/assets/hero-fitness.jpg";
+import heroImage from "@/assets/hero-fitness-happy.jpg";
 import foodScannerImage from "@/assets/food-scanner.jpg";
 import workoutImage from "@/assets/workout-demo.jpg";
 import aiAssistantImage from "@/assets/ai-assistant.jpg";
@@ -35,7 +35,7 @@ const Landing = () => {
       <Navbar />
       
       {/* Hero Section - Neon Metallic */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+      <section className="relative pt-32 pb-32 px-4 overflow-hidden">
         {/* Animated Particles Background */}
         <div className="particles-bg">
           {Array.from({ length: 30 }).map((_, i) => (
@@ -53,7 +53,7 @@ const Landing = () => {
         </div>
         
         <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-[60%_40%] gap-16 items-center">
             <div className="animate-fade-in">
               <Badge className="mb-6 neon-pulse bg-primary/20 text-primary border-primary/50">
                 <Sparkles className="h-4 w-4 mr-2" />
@@ -90,13 +90,15 @@ const Landing = () => {
               </div>
             </div>
             
-            <div className="relative animate-slide-up">
+            <div className="relative animate-slide-up flex justify-center items-center">
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-              <img 
-                src={heroImage} 
-                alt="Health AI Coach - Scanner de Alimentos em Ação" 
-                className="relative rounded-2xl shadow-elevated border-2 border-primary/30 w-full"
-              />
+              <div className="relative p-4">
+                <img 
+                  src={heroImage} 
+                  alt="Pessoa feliz treinando na academia com o Health AI Coach" 
+                  className="relative rounded-3xl shadow-[0_0_40px_rgba(0,102,255,0.4)] border-2 border-primary/30 w-full max-w-md"
+                />
+              </div>
             </div>
           </div>
         </div>

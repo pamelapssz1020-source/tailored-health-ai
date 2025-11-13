@@ -75,7 +75,7 @@ const Landing = () => {
                 Tecnologia que Entende Você • Resultados Reais, Acompanhamento Real
               </p>
               
-              <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex flex-wrap gap-4 mb-12">
                 <Button 
                   variant="default" 
                   size="xl" 
@@ -87,24 +87,6 @@ const Landing = () => {
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button variant="outline" size="xl" asChild>
-                  <Link to="/#features">Ver Funcionalidades</Link>
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-8 text-sm">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                  <span>7 Dias Grátis</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                  <span>Cancele Quando Quiser</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <span>Tecnologia Patenteada</span>
-                </div>
               </div>
             </div>
             
@@ -124,13 +106,9 @@ const Landing = () => {
       <section id="features" className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <Badge className="mb-4 bg-primary/20 text-primary border-primary/50">
-              <Zap className="h-4 w-4 mr-2" />
-              Funcionalidades Revolucionárias
-            </Badge>
-            <h2 className="text-5xl font-bold mb-4">Tecnologia que Transforma</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Cada funcionalidade pensada para sua experiência única
+            <h2 className="text-5xl lg:text-6xl font-bold mb-6">Tudo Que Você Precisa em Um Só Lugar</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              IA Avançada + Acompanhamento Real = Resultados Reais
             </p>
           </div>
           
@@ -144,11 +122,11 @@ const Landing = () => {
                     alt="Scanner de Alimentos com IA"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground neon-pulse">
-                    Tecnologia Patenteada
-                  </Badge>
                 </div>
                 <div className="p-6">
+                  <Badge className="mb-4 bg-primary text-primary-foreground">
+                    Tecnologia Patenteada
+                  </Badge>
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 rounded-lg bg-primary/20 text-primary">
                       <Camera className="h-6 w-6" />
@@ -156,7 +134,7 @@ const Landing = () => {
                     <h3 className="text-2xl font-bold">Scanner Inteligente</h3>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    Escaneie, Analise, Transforme - IA que identifica 10.000+ alimentos instantaneamente
+                    Tire foto, saiba tudo - IA que identifica 10.000+ alimentos instantaneamente
                   </p>
                   <div className="flex items-center gap-2 text-sm text-primary">
                     <Sparkles className="h-4 w-4" />
@@ -181,10 +159,10 @@ const Landing = () => {
                     <div className="p-2 rounded-lg bg-primary/20 text-primary">
                       <Dumbbell className="h-6 w-6" />
                     </div>
-                    <h3 className="text-2xl font-bold">Treinos Exclusivos</h3>
+                    <h3 className="text-2xl font-bold">Treinos Personalizados</h3>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    Cada movimento pensado para SEU corpo, SEUS objetivos
+                    Cada exercício pensado para SEU corpo, SEUS objetivos, SEUS resultados
                   </p>
                   <div className="flex items-center gap-2 text-sm text-primary">
                     <Brain className="h-4 w-4" />
@@ -203,9 +181,6 @@ const Landing = () => {
                     alt="Assistente de IA 24/7"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
-                    Resposta em 3 segundos
-                  </Badge>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-3">
@@ -215,7 +190,7 @@ const Landing = () => {
                     <h3 className="text-2xl font-bold">Assistente Pessoal 24/7</h3>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    Suporte genuíno, tecnologia avançada - Sempre que precisar
+                    Suporte genuíno quando você precisar - Tecnologia que entende você
                   </p>
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm">
                     <p className="text-primary">💬 "Como posso te ajudar hoje?"</p>
@@ -299,43 +274,161 @@ const Landing = () => {
             </Card>
           </div>
 
-          {/* Gamificação */}
-          <Card className="border-primary/30 bg-gradient-to-br from-card to-card/50">
-            <CardContent className="p-8">
-              <div className="flex items-center gap-4 mb-6">
-                <Trophy className="h-8 w-8 text-primary" />
-                <h3 className="text-2xl font-bold">Sistema de Conquistas</h3>
-              </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/10 border border-primary/30">
-                  <Star className="h-8 w-8 text-primary" />
-                  <div>
-                    <p className="font-semibold">Iniciante Dedicação</p>
-                    <p className="text-sm text-muted-foreground">100 pontos</p>
-                  </div>
+          {/* Evolução Semanal - Gráficos */}
+          <div className="mb-8">
+            <h3 className="text-3xl font-bold mb-6 flex items-center gap-3">
+              <Activity className="h-8 w-8 text-primary" />
+              📊 Evolução Semanal
+            </h3>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Gráfico Treinos */}
+            <Card className="border-primary/30 bg-gradient-to-br from-card to-card/50">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl">💪</span>
+                  <h3 className="text-xl font-bold">Treinos</h3>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-accent/10 border border-accent/30">
-                  <Camera className="h-8 w-8 text-accent" />
-                  <div>
-                    <p className="font-semibold">Scanner Expert</p>
-                    <p className="text-sm text-muted-foreground">250 pontos</p>
-                  </div>
+                
+                <div className="flex items-end justify-between gap-2 h-48 mb-6">
+                  {[
+                    { dia: "Seg", valor: 18, label: "18 min" },
+                    { dia: "Ter", valor: 12, label: "12 min" },
+                    { dia: "Qua", valor: 0, label: "Descanso" },
+                    { dia: "Qui", valor: 20, label: "20 min" },
+                    { dia: "Sex", valor: 15, label: "15 min" },
+                    { dia: "Sáb", valor: 10, label: "10 min" },
+                    { dia: "Dom", valor: 0, label: "Descanso" }
+                  ].map((item, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-2 group">
+                      <div className="w-full bg-muted/30 rounded-t-lg relative flex items-end h-full">
+                        <div 
+                          className="w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 relative"
+                          style={{
+                            height: `${(item.valor / 21) * 100}%`,
+                            background: 'hsl(220 100% 50%)',
+                            boxShadow: '0 0 15px hsl(220 100% 50% / 0.6)',
+                            minHeight: item.valor > 0 ? '20%' : '0'
+                          }}
+                        >
+                          {item.valor > 0 && (
+                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-primary">
+                              {item.valor}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">{item.dia}</span>
+                      <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 text-xs px-2 py-1 rounded border border-primary/30 pointer-events-none -translate-y-full mt-2">
+                        {item.label}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/10 border border-secondary/30">
-                  <Target className="h-8 w-8 text-secondary" />
-                  <div>
-                    <p className="font-semibold">Meta Semanal Batida</p>
-                    <p className="text-sm text-muted-foreground">500 pontos</p>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                <p className="text-center text-sm">
-                  <span className="text-primary font-semibold">Você está 15% melhor que semana passada!</span> 🎉
+                
+                <p className="text-center text-sm text-muted-foreground">
+                  Meta: 5 treinos/semana
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Gráfico Nutrição */}
+            <Card className="border-primary/30 bg-gradient-to-br from-card to-card/50">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl">🥗</span>
+                  <h3 className="text-xl font-bold">Nutrição</h3>
+                </div>
+                
+                <div className="flex items-end justify-between gap-2 h-48 mb-6">
+                  {[
+                    { dia: "Seg", valor: 18, label: "1,850 kcal" },
+                    { dia: "Ter", valor: 15, label: "1,650 kcal" },
+                    { dia: "Qua", valor: 11, label: "1,200 kcal" },
+                    { dia: "Qui", valor: 20, label: "2,100 kcal" },
+                    { dia: "Sex", valor: 9, label: "980 kcal" },
+                    { dia: "Sáb", valor: 11, label: "1,150 kcal" },
+                    { dia: "Dom", valor: 8, label: "850 kcal" }
+                  ].map((item, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-2 group">
+                      <div className="w-full bg-muted/30 rounded-t-lg relative flex items-end h-full">
+                        <div 
+                          className="w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 relative"
+                          style={{
+                            height: `${(item.valor / 21) * 100}%`,
+                            background: 'hsl(122 39% 49%)',
+                            boxShadow: '0 0 15px hsl(122 39% 49% / 0.6)',
+                            minHeight: '20%'
+                          }}
+                        >
+                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold" style={{ color: 'hsl(122 39% 49%)' }}>
+                            {item.valor}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">{item.dia}</span>
+                      <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 text-xs px-2 py-1 rounded border border-primary/30 pointer-events-none -translate-y-full mt-2">
+                        {item.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-center text-sm text-muted-foreground">
+                  Meta: 2,000 kcal/dia
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Gráfico Experiência */}
+            <Card className="border-primary/30 bg-gradient-to-br from-card to-card/50">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl">📱</span>
+                  <h3 className="text-xl font-bold">Uso da Plataforma</h3>
+                </div>
+                
+                <div className="flex items-end justify-between gap-2 h-48 mb-6">
+                  {[
+                    { dia: "Seg", valor: 12, label: "Scans: 4" },
+                    { dia: "Ter", valor: 11, label: "Scans: 3" },
+                    { dia: "Qua", valor: 8, label: "Scans: 2" },
+                    { dia: "Qui", valor: 15, label: "Scans: 5" },
+                    { dia: "Sex", valor: 10, label: "Scans: 3" },
+                    { dia: "Sáb", valor: 11, label: "Scans: 4" },
+                    { dia: "Dom", valor: 7, label: "Scans: 2" }
+                  ].map((item, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-2 group">
+                      <div className="w-full bg-muted/30 rounded-t-lg relative flex items-end h-full">
+                        <div 
+                          className="w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 relative"
+                          style={{
+                            height: `${(item.valor / 21) * 100}%`,
+                            background: 'hsl(193 100% 50%)',
+                            boxShadow: '0 0 15px hsl(193 100% 50% / 0.6)',
+                            minHeight: '20%'
+                          }}
+                        >
+                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-secondary">
+                            {item.valor}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">{item.dia}</span>
+                      <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 text-xs px-2 py-1 rounded border border-primary/30 pointer-events-none -translate-y-full mt-2">
+                        {item.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-center text-sm">
+                  <span className="text-secondary font-semibold">Você está 15% mais ativo que semana passada!</span> 🎉
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 

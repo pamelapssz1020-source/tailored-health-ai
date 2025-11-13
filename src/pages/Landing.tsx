@@ -45,8 +45,24 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section - Neon Metallic */}
+      {/* Hero Section - Neon Metallic with Video Background */}
       <section className="relative pt-32 pb-32 px-4 overflow-hidden">
+        {/* Video Background */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'%3E%3Crect fill='%230A0A0A' width='1920' height='1080'/%3E%3C/svg%3E"
+          >
+            <source src="https://player.vimeo.com/external/473636202.hd.mp4?s=c1e86c97c69cf87d7b0b1f6d48f9e2fd8b2b6ec2&profile_id=175" type="video/mp4" />
+          </video>
+          {/* Overlay gradiente para legibilidade */}
+          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/20" />
+        </div>
+        
         {/* Animated Particles Background */}
         <div className="particles-bg">
           {Array.from({ length: 30 }).map((_, i) => (
@@ -107,7 +123,7 @@ const Landing = () => {
                 <img 
                   src={heroImage} 
                   alt="Pessoa feliz treinando na academia com o Health AI Coach" 
-                  className="relative rounded-3xl shadow-[0_0_40px_rgba(0,102,255,0.4)] border-2 border-primary/30 w-full max-w-md"
+                  className="rounded-2xl shadow-glow-intense border-2 border-primary/30 hover:scale-105 transition-transform duration-500 w-full max-w-md mx-auto block"
                 />
               </div>
             </div>
@@ -129,12 +145,19 @@ const Landing = () => {
             {/* Scanner Inteligente */}
             <Card className="group hover:shadow-glow transition-all duration-500 border-primary/30 hover:border-primary/60 overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative overflow-hidden h-64">
-                  <img 
-                    src={foodScannerImage} 
-                    alt="Scanner de Alimentos com IA"
+                <div className="relative overflow-hidden h-64 bg-black">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+                    poster={foodScannerImage}
+                  >
+                    <source src="https://cdn.coverr.co/videos/coverr-person-scanning-food-with-phone-9348/1080p.mp4" type="video/mp4" />
+                  </video>
+                  {/* Overlay sutil com glow azul */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 <div className="p-6">
                   <Badge className="mb-4 bg-primary text-primary-foreground">
@@ -160,12 +183,19 @@ const Landing = () => {
             {/* Treinos Personalizados */}
             <Card className="group hover:shadow-glow transition-all duration-500 border-primary/30 hover:border-primary/60 overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative overflow-hidden h-64">
-                  <img 
-                    src={workoutImage} 
-                    alt="Treinos Personalizados pela IA"
+                <div className="relative overflow-hidden h-64 bg-black">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+                    poster={workoutImage}
+                  >
+                    <source src="https://cdn.coverr.co/videos/coverr-personal-trainer-helping-woman-exercise/1080p.mp4" type="video/mp4" />
+                  </video>
+                  {/* Overlay sutil com glow azul */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-3">

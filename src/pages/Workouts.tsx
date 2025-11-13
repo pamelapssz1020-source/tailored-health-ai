@@ -8,31 +8,31 @@ import { Dumbbell, Play, Zap, Clock, TrendingUp, Target, Search, Calendar, Award
 import { useNavigate } from "react-router-dom";
 
 const muscleGroups = [
-  "Chest", "Biceps", "Triceps", "Abs", "Glutes", "Shoulders",
-  "Quads", "Lats", "Traps", "Lower Back", "Forearms", "Obliques",
-  "Hamstrings", "Calves", "Abductors"
+  "Peito", "Bíceps", "Tríceps", "Abdômen", "Glúteos", "Ombros",
+  "Quadríceps", "Dorsais", "Trapézio", "Lombar", "Antebraços", "Oblíquos",
+  "Posterior", "Panturrilhas", "Abdutores"
 ];
 
 const equipmentList = [
-  { name: "Flat Bench", selected: true },
-  { name: "Adjustable Bench", selected: true },
-  { name: "Dumbbells", selected: true },
-  { name: "Olympic Barbell", selected: false },
+  { name: "Banco Reto", selected: true },
+  { name: "Banco Ajustável", selected: true },
+  { name: "Halteres", selected: true },
+  { name: "Barra Olímpica", selected: false },
   { name: "Leg Press", selected: true },
-  { name: "Lat Pulldown Cable", selected: true },
-  { name: "Squat Rack", selected: false },
+  { name: "Puxador Alto", selected: true },
+  { name: "Rack de Agachamento", selected: false },
   { name: "Smith Machine", selected: false },
-  { name: "Resistance Bands", selected: true },
-  { name: "Pull-up Bar", selected: true },
+  { name: "Faixas Elásticas", selected: true },
+  { name: "Barra Fixa", selected: true },
   { name: "Kettlebells", selected: false },
-  { name: "Medicine Ball", selected: false },
+  { name: "Bola Medicinal", selected: false },
 ];
 
 const Workouts = () => {
   const navigate = useNavigate();
   const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
-  const [selectedMuscles, setSelectedMuscles] = useState<string[]>(["Chest", "Abs", "Biceps"]);
-  const [selectedDays, setSelectedDays] = useState<string[]>(["Mon", "Wed", "Fri"]);
+  const [selectedMuscles, setSelectedMuscles] = useState<string[]>(["Peito", "Abdômen", "Bíceps"]);
+  const [selectedDays, setSelectedDays] = useState<string[]>(["Seg", "Qua", "Sex"]);
   const [duration, setDuration] = useState("45-60min");
 
   const toggleMuscle = (muscle: string) => {
@@ -159,7 +159,7 @@ const Workouts = () => {
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-primary" />
-                PICK YOUR TARGET AREAS
+                ESCOLHA SUAS ÁREAS DE FOCO
               </span>
               <Badge variant="secondary">{selectedMuscles.length} selecionados</Badge>
             </CardTitle>
@@ -188,14 +188,14 @@ const Workouts = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-secondary" />
-              SET YOUR WORKOUT FREQUENCY & DURATION
+              DEFINA SUA FREQUÊNCIA E DURAÇÃO
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
               <p className="font-medium mb-3">Dias da Semana</p>
               <div className="flex justify-between gap-2">
-                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((day) => (
                   <Button
                     key={day}
                     variant={selectedDays.includes(day) ? "default" : "outline"}
@@ -232,7 +232,7 @@ const Workouts = () => {
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <Dumbbell className="h-5 w-5 text-accent" />
-                SELECT YOUR PREFERRED EQUIPMENT
+                SELECIONE SEUS EQUIPAMENTOS
               </span>
               <Badge variant="secondary">
                 {equipmentList.filter(e => e.selected).length} selecionados
@@ -244,7 +244,7 @@ const Workouts = () => {
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Search for equipment"
+                placeholder="Buscar equipamento"
                 className="w-full pl-10 pr-4 py-2 rounded-md bg-muted border border-border focus:border-primary focus:outline-none"
               />
             </div>
@@ -273,22 +273,22 @@ const Workouts = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              GET WEIGHT & REP SUGGESTIONS
+              SUGESTÕES DE PESO E REPETIÇÕES
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-muted/50 border border-border">
-                <p className="font-bold mb-2">Overhand Grip Lat Pulldown</p>
+                <p className="font-bold mb-2">Puxada Frontal Pegada Pronada</p>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Max Weight Lifted: <span className="text-primary">50 lb</span> - 10 reps - 02/10/2025
+                  Peso Máximo: <span className="text-primary">23 kg</span> - 10 reps - 02/10/2025
                 </p>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Sugestão da IA:</p>
-                    <p className="text-lg font-bold text-secondary">55 lb - 8-10 reps</p>
+                    <p className="text-lg font-bold text-secondary">25 kg - 8-10 reps</p>
                   </div>
-                  <Button variant="outline" size="sm">Next Exercise</Button>
+                  <Button variant="outline" size="sm">Próximo Exercício</Button>
                 </div>
               </div>
             </div>
@@ -300,22 +300,22 @@ const Workouts = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5 text-accent" />
-              GET MOTIVATED BY SEEING RESULTS
+              ACOMPANHE SEU PROGRESSO
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-lg border border-dashed border-secondary text-center">
-                  <p className="text-sm text-muted-foreground mb-2">BEFORE</p>
+                  <p className="text-sm text-muted-foreground mb-2">ANTES</p>
                   <div className="h-48 bg-muted/30 rounded-lg flex items-center justify-center">
-                    <p className="text-sm">Upload Photo</p>
+                    <p className="text-sm">Enviar Foto</p>
                   </div>
                 </div>
                 <div className="p-4 rounded-lg border border-dashed border-secondary text-center">
-                  <p className="text-sm text-muted-foreground mb-2">AFTER</p>
+                  <p className="text-sm text-muted-foreground mb-2">DEPOIS</p>
                   <div className="h-48 bg-muted/30 rounded-lg flex items-center justify-center">
-                    <p className="text-sm">Upload Photo</p>
+                    <p className="text-sm">Enviar Foto</p>
                   </div>
                 </div>
               </div>

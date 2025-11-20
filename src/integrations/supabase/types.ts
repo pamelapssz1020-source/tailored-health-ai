@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          birth_date: string | null
+          created_at: string
+          full_name: string
+          gender: string | null
+          id: string
+          last_login: string | null
+          phone_number: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date?: string | null
+          created_at?: string
+          full_name: string
+          gender?: string | null
+          id?: string
+          last_login?: string | null
+          phone_number: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string | null
+          created_at?: string
+          full_name?: string
+          gender?: string | null
+          id?: string
+          last_login?: string | null
+          phone_number?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          dietary_preferences: string[] | null
+          experience_level: string | null
+          fitness_goal: string | null
+          health_conditions: string[] | null
+          id: string
+          updated_at: string
+          user_id: string
+          workout_frequency: string | null
+        }
+        Insert: {
+          created_at?: string
+          dietary_preferences?: string[] | null
+          experience_level?: string | null
+          fitness_goal?: string | null
+          health_conditions?: string[] | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          workout_frequency?: string | null
+        }
+        Update: {
+          created_at?: string
+          dietary_preferences?: string[] | null
+          experience_level?: string | null
+          fitness_goal?: string | null
+          health_conditions?: string[] | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          workout_frequency?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

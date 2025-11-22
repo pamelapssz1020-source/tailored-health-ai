@@ -261,13 +261,11 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
           {exercicioEmVideo && (
             <div className="space-y-4">
               {exercicioEmVideo.videoUrl ? (
-                <div className="aspect-video bg-muted/30 rounded-lg overflow-hidden">
+                <div className="aspect-video bg-black rounded-lg overflow-hidden">
                   <iframe
                     width="100%"
                     height="100%"
-                    src={exercicioEmVideo.videoUrl.includes('embed') 
-                      ? exercicioEmVideo.videoUrl 
-                      : exercicioEmVideo.videoUrl.replace('watch?v=', 'embed/')}
+                    src={exercicioEmVideo.videoUrl}
                     title={`Demonstração: ${exercicioEmVideo.nome}`}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -277,9 +275,17 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
                 </div>
               ) : (
                 <div className="aspect-video bg-muted/30 rounded-lg flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="text-6xl mb-4">🏋️</div>
-                    <p className="text-muted-foreground">Vídeo demonstrativo em carregamento...</p>
+                  <div className="text-center p-8 space-y-4">
+                    <div className="text-6xl mb-4">🎥</div>
+                    <p className="text-muted-foreground mb-4">Vídeo não disponível</p>
+                    <a
+                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercicioEmVideo.nome + ' execução correta')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                    >
+                      Buscar no YouTube
+                    </a>
                   </div>
                 </div>
               )}

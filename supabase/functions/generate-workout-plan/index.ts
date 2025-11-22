@@ -12,6 +12,11 @@ serve(async (req) => {
 
   try {
     const { biotipo, objetivo, nivel, diasTreino, tempo, equipamentos, limitacoes } = await req.json();
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY não configurada');
+    }
 
     // Validar campos obrigatórios
     if (!biotipo || !objetivo || !nivel || !diasTreino || !tempo) {
@@ -19,11 +24,6 @@ serve(async (req) => {
         JSON.stringify({ error: "Campos obrigatórios faltando" }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
-    }
-
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY não configurada");
     }
 
     const prompt = `Você é um personal trainer expert em criar treinos personalizados baseados em biotipo corporal.
@@ -123,7 +123,7 @@ FORMATO JSON EXATO:
             "avancado": "Barra + 25kg+ cada lado"
           },
           "observacoes": "Manter escápulas retraídas, descer até tocar o peito",
-          "videoUrl": "https://www.youtube.com/watch?v=rT7DgCr-3pg",
+          "imagemUrl": "",
           "tecnicaExecucao": [
             "Deitar no banco com pés firmes no chão",
             "Pegar a barra com pegada média",
@@ -153,7 +153,7 @@ FORMATO JSON EXATO:
 }
 
 IMPORTANTE:
-- Use URLs REAIS de vídeos do YouTube
+- O campo imagemUrl deve ficar vazio, será preenchido depois
 - Seja específico nas cargas sugeridas
 - Adapte volume/intensidade ao biotipo
 - Inclua 6-8 exercícios por treino
@@ -212,7 +212,53 @@ Responda APENAS com o JSON válido, sem markdown.`;
     
     const planoTreino = JSON.parse(jsonText);
 
-    console.log('Plano de treino gerado com sucesso');
+    console.log('Plano de treino gerado, iniciando geração de imagens...');
+
+    // Gerar imagens demonstrativas para cada exercício
+    for (const treino of planoTreino.treinos) {
+      for (const exercicio of treino.exercicios) {
+        try {
+          const imagePrompt = `Professional fitness demonstration photo: Athletic person performing "${exercicio.nome}" exercise in a modern gym. Clear form demonstration, proper technique visible, professional gym lighting, high quality instructional photo, side or front view showing complete movement form. Realistic, photographic style.`;
+          
+          console.log(`Gerando imagem para: ${exercicio.nome}`);
+          
+          const imageResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash-image',
+              messages: [
+                {
+                  role: 'user',
+                  content: imagePrompt
+                }
+              ],
+            }),
+          });
+
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            if (imageData.choices && imageData.choices[0] && imageData.choices[0].message) {
+              const imageContent = imageData.choices[0].message.content;
+              // O modelo retorna a URL da imagem gerada ou a própria imagem em base64
+              exercicio.imagemUrl = imageContent;
+              console.log(`✓ Imagem gerada para ${exercicio.nome}`);
+            }
+          } else {
+            console.log(`✗ Falha ao gerar imagem para ${exercicio.nome}`);
+            exercicio.imagemUrl = '';
+          }
+        } catch (error) {
+          console.error(`Erro ao gerar imagem para ${exercicio.nome}:`, error);
+          exercicio.imagemUrl = '';
+        }
+      }
+    }
+
+    console.log('Plano de treino completo gerado com sucesso');
 
     return new Response(
       JSON.stringify({ plano: planoTreino }),

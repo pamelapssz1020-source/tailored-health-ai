@@ -126,7 +126,7 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
                     className="bg-gradient-to-r from-pink-600 to-orange-600 shrink-0"
                   >
                     <Play size={16} />
-                    Ver Vídeo
+                    Ver Demonstração
                   </Button>
                 </div>
 
@@ -252,7 +252,7 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
         </ul>
       </Card>
 
-      {/* Modal de Vídeo */}
+      {/* Modal de Demonstração */}
       <Dialog open={!!exercicioEmVideo} onOpenChange={() => setExercicioEmVideo(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -260,18 +260,48 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
           </DialogHeader>
           {exercicioEmVideo && (
             <div className="space-y-4">
-              <div className="aspect-video">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`${exercicioEmVideo.videoUrl.replace('watch?v=', 'embed/')}?autoplay=1`}
-                  title={exercicioEmVideo.nome}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="rounded-lg"
-                />
+              {exercicioEmVideo.imagemUrl ? (
+                <div className="aspect-video bg-muted/30 rounded-lg overflow-hidden flex items-center justify-center">
+                  <img 
+                    src={exercicioEmVideo.imagemUrl} 
+                    alt={`Demonstração: ${exercicioEmVideo.nome}`}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="text-center p-8"><div class="text-6xl mb-4">🏋️</div><p class="text-muted-foreground">Imagem demonstrativa em carregamento...</p></div>';
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="aspect-video bg-muted/30 rounded-lg flex items-center justify-center">
+                  <div className="text-center p-8">
+                    <div className="text-6xl mb-4">🏋️</div>
+                    <p className="text-muted-foreground">Imagem demonstrativa será gerada</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex flex-wrap gap-2">
+                {exercicioEmVideo.gruposMusculares.map((musculo: string) => (
+                  <Badge key={musculo} variant="secondary">{musculo}</Badge>
+                ))}
               </div>
+              
+              <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{exercicioEmVideo.series}</div>
+                  <div className="text-xs text-muted-foreground">Séries</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{exercicioEmVideo.repeticoes}</div>
+                  <div className="text-xs text-muted-foreground">Repetições</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{exercicioEmVideo.descanso}</div>
+                  <div className="text-xs text-muted-foreground">Descanso</div>
+                </div>
+              </div>
+              
               <div>
                 <h4 className="font-bold mb-2">Técnica de Execução:</h4>
                 <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
@@ -280,6 +310,13 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
                   ))}
                 </ol>
               </div>
+              
+              {exercicioEmVideo.observacoes && (
+                <div className="flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <AlertCircle size={16} className="text-yellow-600 shrink-0 mt-0.5" />
+                  <span className="text-sm text-muted-foreground">{exercicioEmVideo.observacoes}</span>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>

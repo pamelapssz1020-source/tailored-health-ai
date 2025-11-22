@@ -100,6 +100,29 @@ const NutritionistAI = () => {
   };
 
   const handleGeneratePlan = async () => {
+    // Validar campos obrigatórios
+    const requiredFields = [
+      { field: 'objetivo', label: 'Objetivo' },
+      { field: 'idade', label: 'Idade' },
+      { field: 'pesoAtual', label: 'Peso Atual' },
+      { field: 'altura', label: 'Altura' },
+      { field: 'nivelAtividade', label: 'Nível de Atividade' },
+      { field: 'numRefeicoes', label: 'Número de Refeições' },
+    ];
+
+    const missingFields = requiredFields.filter(
+      ({ field }) => !formData[field as keyof UserProfile]
+    );
+
+    if (missingFields.length > 0) {
+      toast({
+        title: "Campos Obrigatórios Faltando",
+        description: `Preencha: ${missingFields.map(f => f.label).join(', ')}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
@@ -261,7 +284,9 @@ const NutritionistAI = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <Label htmlFor="idade" className="text-foreground">Idade</Label>
+                  <Label htmlFor="idade" className="text-foreground">
+                    Idade <span className="text-destructive">*</span>
+                  </Label>
                   <Input
                     id="idade"
                     placeholder="Ex: 30"
@@ -271,7 +296,9 @@ const NutritionistAI = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="peso" className="text-foreground">Peso Atual (kg)</Label>
+                  <Label htmlFor="peso" className="text-foreground">
+                    Peso Atual (kg) <span className="text-destructive">*</span>
+                  </Label>
                   <Input
                     id="peso"
                     placeholder="Ex: 70.5"
@@ -281,7 +308,9 @@ const NutritionistAI = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="altura" className="text-foreground">Altura (cm)</Label>
+                  <Label htmlFor="altura" className="text-foreground">
+                    Altura (cm) <span className="text-destructive">*</span>
+                  </Label>
                   <Input
                     id="altura"
                     placeholder="Ex: 170"
@@ -501,7 +530,9 @@ const NutritionistAI = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="objetivo" className="text-foreground">Qual seu principal objetivo?</Label>
+                    <Label htmlFor="objetivo" className="text-foreground">
+                      Qual seu principal objetivo? <span className="text-destructive">*</span>
+                    </Label>
                     <Select value={formData.objetivo} onValueChange={(value) => handleInputChange("objetivo", value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Selecione um objetivo" />
@@ -517,7 +548,9 @@ const NutritionistAI = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="atividade" className="text-foreground">Nível de Atividade Física</Label>
+                    <Label htmlFor="atividade" className="text-foreground">
+                      Nível de Atividade Física <span className="text-destructive">*</span>
+                    </Label>
                     <Select value={formData.nivelAtividade} onValueChange={(value) => handleInputChange("nivelAtividade", value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Selecione seu nível" />
@@ -567,7 +600,9 @@ const NutritionistAI = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="refeicoes" className="text-foreground">Refeições por dia</Label>
+                    <Label htmlFor="refeicoes" className="text-foreground">
+                      Refeições por dia <span className="text-destructive">*</span>
+                    </Label>
                     <Select value={formData.numRefeicoes} onValueChange={(value) => handleInputChange("numRefeicoes", value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="5 Refeições" />
@@ -698,6 +733,13 @@ const NutritionistAI = () => {
           </Card>
 
           {/* Botão de Gerar */}
+          <div className="bg-card border-2 border-primary/30 rounded-lg p-4 mb-4">
+            <p className="text-sm text-muted-foreground text-center">
+              <span className="text-destructive font-bold">*</span> Campos obrigatórios: 
+              <span className="font-medium text-foreground"> Objetivo, Idade, Peso Atual, Altura, Nível de Atividade e Número de Refeições</span>
+            </p>
+          </div>
+
           <Button
             onClick={handleGeneratePlan}
             disabled={isGenerating}

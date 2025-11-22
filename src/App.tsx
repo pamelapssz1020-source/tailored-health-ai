@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Nutrition from "./pages/Nutrition";
 import Workouts from "./pages/Workouts";
+import WorkoutSetup from "./pages/WorkoutSetup";
 import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 import FitnessProfile from "./pages/FitnessProfile";
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/nutrition" element={<Nutrition />} />
           <Route path="/workouts" element={<Workouts />} />
+          <Route path="/workouts/setup" element={<WorkoutSetup />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/fitness-profile" element={<FitnessProfile />} />
           <Route path="/nutritionist-ai" element={<NutritionistAI />} />

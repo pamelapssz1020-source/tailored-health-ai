@@ -265,10 +265,12 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
                   <iframe
                     width="100%"
                     height="100%"
-                    src={exercicioEmVideo.videoUrl}
+                    src={exercicioEmVideo.videoUrl.includes('embed') 
+                      ? exercicioEmVideo.videoUrl 
+                      : exercicioEmVideo.videoUrl.replace('watch?v=', 'embed/')}
                     title={`Demonstração: ${exercicioEmVideo.nome}`}
                     frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
                     className="w-full h-full"
                   />

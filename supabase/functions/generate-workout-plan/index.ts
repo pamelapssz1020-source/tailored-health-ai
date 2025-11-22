@@ -5,6 +5,76 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Banco de dados de vídeos do YouTube por exercício
+const VIDEO_DATABASE: Record<string, string> = {
+  // Peito
+  'supino reto': 'rT7DgCr-3pg',
+  'supino inclinado': 'SrqOu55lrYU',
+  'supino declinado': 'LfyQBUKR8SE',
+  'crucifixo': 'eozdVDA78K0',
+  'crossover': 'taI4XduLpTk',
+  'flexao': 'IODxDxX7oi4',
+  'paralelas': 'wjUmnZH528Y',
+  
+  // Costas
+  'barra fixa': 'eGo4IYlbE5g',
+  'remada curvada': 'kBWAon7ItDw',
+  'pulldown': 'CAwf7n6Luuc',
+  'remada cavalinho': 'UCXxvVItLoM',
+  'remada unilateral': 'roCP6wCXPqo',
+  'levantamento terra': '1uDiW5--rAE',
+  'pull over': 'tqJB0fuRh7w',
+  
+  // Pernas
+  'agachamento': 'ultWZbUMPL8',
+  'leg press': 'IZxyjW7MPJQ',
+  'hack': 'EdtaJRBqwes',
+  'cadeira extensora': 'YyvSfVjQeL0',
+  'cadeira flexora': 'ELOCsoDSmrg',
+  'stiff': '1uDiW5--rAE',
+  'afundo': 'QOVaHwm-Q6U',
+  'panturrilha': 'gwLzBJYoWlI',
+  'gluteo': 'SEdqd1n0cvg',
+  
+  // Ombros
+  'desenvolvimento': 'qEwKCR5JCog',
+  'elevacao lateral': '3VcKaXpzqRo',
+  'elevacao frontal': '1a4cH4Tx11s',
+  'remada alta': 'Q5ZtJEIqy4s',
+  'crucifixo inverso': 'T7Wc0cXwU-Q',
+  
+  // Braços
+  'rosca direta': 'ykJmrZ5v0Oo',
+  'rosca alternada': 'sAq_ocpRh_I',
+  'rosca martelo': 'TwD-YGVP4Bk',
+  'rosca scott': 'sAq_ocpRh_I',
+  'triceps pulley': '2-LAMcpzODU',
+  'triceps testa': 'd_KZxkY_0cM',
+  'triceps frances': 'PpuZKWO4Pd0',
+  'mergulho': 'wjUmnZH528Y',
+  
+  // Abdômen
+  'abdominal': 'FEH6vZpUxQg',
+  'prancha': 'ASdvN_XEl_c',
+  'elevacao pernas': '1fbU_MkV7NE',
+};
+
+function buscarVideoExercicio(nomeExercicio: string): string {
+  const nome = nomeExercicio.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  
+  // Buscar correspondência exata ou parcial
+  for (const [key, videoId] of Object.entries(VIDEO_DATABASE)) {
+    if (nome.includes(key) || key.includes(nome.split(' ')[0])) {
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+  }
+  
+  // Fallback: vídeo genérico de exercício
+  return 'https://www.youtube.com/embed/IODxDxX7oi4';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -122,9 +192,9 @@ FORMATO JSON EXATO:
             "intermediario": "Barra + 15-20kg cada lado",
             "avancado": "Barra + 25kg+ cada lado"
           },
-          "observacoes": "Manter escápulas retraídas, descer até tocar o peito",
-          "imagemUrl": "",
-          "tecnicaExecucao": [
+           "observacoes": "Manter escápulas retraídas, descer até tocar o peito",
+           "videoUrl": "",
+           "tecnicaExecucao": [
             "Deitar no banco com pés firmes no chão",
             "Pegar a barra com pegada média",
             "Descer controladamente até o peito",
@@ -153,7 +223,7 @@ FORMATO JSON EXATO:
 }
 
 IMPORTANTE:
-- O campo imagemUrl deve ficar vazio, será preenchido depois
+- O campo videoUrl deve ficar vazio, será preenchido depois
 - Seja específico nas cargas sugeridas
 - Adapte volume/intensidade ao biotipo
 - Inclua 6-8 exercícios por treino
@@ -212,49 +282,13 @@ Responda APENAS com o JSON válido, sem markdown.`;
     
     const planoTreino = JSON.parse(jsonText);
 
-    console.log('Plano de treino gerado, iniciando geração de imagens...');
+    console.log('Plano de treino gerado, adicionando vídeos demonstrativos...');
 
-    // Gerar imagens demonstrativas para cada exercício
+    // Adicionar vídeos demonstrativos do YouTube para cada exercício
     for (const treino of planoTreino.treinos) {
       for (const exercicio of treino.exercicios) {
-        try {
-          const imagePrompt = `Professional fitness demonstration photo: Athletic person performing "${exercicio.nome}" exercise in a modern gym. Clear form demonstration, proper technique visible, professional gym lighting, high quality instructional photo, side or front view showing complete movement form. Realistic, photographic style.`;
-          
-          console.log(`Gerando imagem para: ${exercicio.nome}`);
-          
-          const imageResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'google/gemini-2.5-flash-image',
-              messages: [
-                {
-                  role: 'user',
-                  content: imagePrompt
-                }
-              ],
-            }),
-          });
-
-          if (imageResponse.ok) {
-            const imageData = await imageResponse.json();
-            if (imageData.choices && imageData.choices[0] && imageData.choices[0].message) {
-              const imageContent = imageData.choices[0].message.content;
-              // O modelo retorna a URL da imagem gerada ou a própria imagem em base64
-              exercicio.imagemUrl = imageContent;
-              console.log(`✓ Imagem gerada para ${exercicio.nome}`);
-            }
-          } else {
-            console.log(`✗ Falha ao gerar imagem para ${exercicio.nome}`);
-            exercicio.imagemUrl = '';
-          }
-        } catch (error) {
-          console.error(`Erro ao gerar imagem para ${exercicio.nome}:`, error);
-          exercicio.imagemUrl = '';
-        }
+        exercicio.videoUrl = buscarVideoExercicio(exercicio.nome);
+        console.log(`✓ Vídeo atribuído para ${exercicio.nome}: ${exercicio.videoUrl}`);
       }
     }
 

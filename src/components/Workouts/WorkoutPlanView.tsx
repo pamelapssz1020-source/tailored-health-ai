@@ -260,23 +260,24 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
           </DialogHeader>
           {exercicioEmVideo && (
             <div className="space-y-4">
-              {exercicioEmVideo.imagemUrl ? (
-                <div className="aspect-video bg-muted/30 rounded-lg overflow-hidden flex items-center justify-center">
-                  <img 
-                    src={exercicioEmVideo.imagemUrl} 
-                    alt={`Demonstração: ${exercicioEmVideo.nome}`}
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<div class="text-center p-8"><div class="text-6xl mb-4">🏋️</div><p class="text-muted-foreground">Imagem demonstrativa em carregamento...</p></div>';
-                    }}
+              {exercicioEmVideo.videoUrl ? (
+                <div className="aspect-video bg-muted/30 rounded-lg overflow-hidden">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={exercicioEmVideo.videoUrl}
+                    title={`Demonstração: ${exercicioEmVideo.nome}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
                   />
                 </div>
               ) : (
                 <div className="aspect-video bg-muted/30 rounded-lg flex items-center justify-center">
                   <div className="text-center p-8">
                     <div className="text-6xl mb-4">🏋️</div>
-                    <p className="text-muted-foreground">Imagem demonstrativa será gerada</p>
+                    <p className="text-muted-foreground">Vídeo demonstrativo em carregamento...</p>
                   </div>
                 </div>
               )}

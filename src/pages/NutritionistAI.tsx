@@ -35,7 +35,7 @@ interface UserProfile {
   nivelAtividade: string;
   nivelEstresse: string;
   consumoAgua: string;
-  refeicoesDia: string;
+  numRefeicoes: string;
   horarioAcordar: string;
   horarioDormir: string;
   tempoPreparacao: string;
@@ -44,6 +44,11 @@ interface UserProfile {
   alimentosOdiados: string;
   motivacao: string;
   suplementos: string;
+  restricoes?: string[];
+  restricoesOutras?: string;
+  pesoObjetivo?: string;
+  condicoesSaude?: string;
+  preferenciasHorarios?: string;
 }
 
 const NutritionistAI = () => {
@@ -68,7 +73,7 @@ const NutritionistAI = () => {
     nivelAtividade: "",
     nivelEstresse: "",
     consumoAgua: "",
-    refeicoesDia: "",
+    numRefeicoes: "",
     horarioAcordar: "07:00",
     horarioDormir: "22:00",
     tempoPreparacao: "",
@@ -77,6 +82,7 @@ const NutritionistAI = () => {
     alimentosOdiados: "",
     motivacao: "",
     suplementos: "",
+    restricoes: [],
   });
 
   const handleCheckboxChange = (field: keyof UserProfile, value: string) => {
@@ -97,8 +103,14 @@ const NutritionistAI = () => {
     setIsGenerating(true);
     
     try {
+      // Preparar dados com mapeamento de campos
+      const payload = {
+        ...formData,
+        restricoes: formData.restricoesAlimentares,
+      };
+
       const { data, error } = await supabase.functions.invoke("generate-diet-plan", {
-        body: { userProfile: formData },
+        body: { userProfile: payload },
       });
 
       if (error) throw error;
@@ -171,7 +183,7 @@ const NutritionistAI = () => {
       nivelAtividade: "",
       nivelEstresse: "",
       consumoAgua: "",
-      refeicoesDia: "",
+      numRefeicoes: "",
       horarioAcordar: "07:00",
       horarioDormir: "22:00",
       tempoPreparacao: "",
@@ -180,6 +192,7 @@ const NutritionistAI = () => {
       alimentosOdiados: "",
       motivacao: "",
       suplementos: "",
+      restricoes: [],
     });
   };
 
@@ -555,7 +568,7 @@ const NutritionistAI = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="refeicoes" className="text-foreground">Refeições por dia</Label>
-                    <Select value={formData.refeicoesDia} onValueChange={(value) => handleInputChange("refeicoesDia", value)}>
+                    <Select value={formData.numRefeicoes} onValueChange={(value) => handleInputChange("numRefeicoes", value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="5 Refeições" />
                       </SelectTrigger>

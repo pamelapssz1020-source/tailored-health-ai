@@ -5,16 +5,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Banco de dados de vídeos do YouTube por exercício
+// Banco de dados de vídeos do YouTube por exercício (IDs para embed)
 const VIDEO_DATABASE: Record<string, string> = {
   // Peito
   'supino reto': 'rT7DgCr-3pg',
   'supino inclinado': 'SrqOu55lrYU',
   'supino declinado': 'LfyQBUKR8SE',
+  'supino halteres': 'VmB1G1K7v94',
   'crucifixo': 'eozdVDA78K0',
   'crossover': 'taI4XduLpTk',
   'flexao': 'IODxDxX7oi4',
   'paralelas': 'wjUmnZH528Y',
+  'peck deck': 'Z71bFIti4Bw',
   
   // Costas
   'barra fixa': 'eGo4IYlbE5g',
@@ -24,6 +26,8 @@ const VIDEO_DATABASE: Record<string, string> = {
   'remada unilateral': 'roCP6wCXPqo',
   'levantamento terra': '1uDiW5--rAE',
   'pull over': 'tqJB0fuRh7w',
+  'remada baixa': 'GZbfZ033f74',
+  'pullover': 'tqJB0fuRh7w',
   
   // Pernas
   'agachamento': 'ultWZbUMPL8',
@@ -35,6 +39,8 @@ const VIDEO_DATABASE: Record<string, string> = {
   'afundo': 'QOVaHwm-Q6U',
   'panturrilha': 'gwLzBJYoWlI',
   'gluteo': 'SEdqd1n0cvg',
+  'agachamento bulgaro': '2C-uNgKwPLE',
+  'mesa flexora': 'ELOCsoDSmrg',
   
   // Ombros
   'desenvolvimento': 'qEwKCR5JCog',
@@ -42,21 +48,25 @@ const VIDEO_DATABASE: Record<string, string> = {
   'elevacao frontal': '1a4cH4Tx11s',
   'remada alta': 'Q5ZtJEIqy4s',
   'crucifixo inverso': 'T7Wc0cXwU-Q',
+  'desenvolvimento arnold': '6Z15_WdXmVw',
   
   // Braços
   'rosca direta': 'ykJmrZ5v0Oo',
   'rosca alternada': 'sAq_ocpRh_I',
   'rosca martelo': 'TwD-YGVP4Bk',
-  'rosca scott': 'sAq_ocpRh_I',
+  'rosca scott': 'fIWP-FRFNU0',
+  'rosca concentrada': 'Jvj2wV0lNRY',
   'triceps pulley': '2-LAMcpzODU',
   'triceps testa': 'd_KZxkY_0cM',
   'triceps frances': 'PpuZKWO4Pd0',
   'mergulho': 'wjUmnZH528Y',
+  'triceps corda': 'vB7xnYqjmYk',
   
   // Abdômen
-  'abdominal': 'FEH6vZpUxQg',
+  'abdominal': '1fbU_MkV7NE',
   'prancha': 'ASdvN_XEl_c',
-  'elevacao pernas': '1fbU_MkV7NE',
+  'elevacao pernas': 'JB2oyawG9KI',
+  'abdominal crunch': '1fbU_MkV7NE',
 };
 
 function buscarVideoExercicio(nomeExercicio: string): string {

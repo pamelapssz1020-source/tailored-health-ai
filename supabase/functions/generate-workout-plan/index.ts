@@ -1,88 +1,55 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Banco de dados de vídeos do YouTube por exercício (IDs para embed)
-const VIDEO_DATABASE: Record<string, string> = {
-  // Peito
-  'supino reto': 'rT7DgCr-3pg',
-  'supino inclinado': 'SrqOu55lrYU',
-  'supino declinado': 'LfyQBUKR8SE',
-  'supino halteres': 'VmB1G1K7v94',
-  'crucifixo': 'eozdVDA78K0',
-  'crossover': 'taI4XduLpTk',
-  'flexao': 'IODxDxX7oi4',
-  'paralelas': 'wjUmnZH528Y',
-  'peck deck': 'Z71bFIti4Bw',
+// Buscar vídeo do exercício no banco de dados
+async function buscarVideoExercicio(supabase: any, nomeExercicio: string): Promise<string> {
+  const nome = nomeExercicio.toLowerCase().trim();
   
-  // Costas
-  'barra fixa': 'eGo4IYlbE5g',
-  'remada curvada': 'kBWAon7ItDw',
-  'pulldown': 'CAwf7n6Luuc',
-  'remada cavalinho': 'UCXxvVItLoM',
-  'remada unilateral': 'roCP6wCXPqo',
-  'levantamento terra': '1uDiW5--rAE',
-  'pull over': 'tqJB0fuRh7w',
-  'remada baixa': 'GZbfZ033f74',
-  'pullover': 'tqJB0fuRh7w',
-  
-  // Pernas
-  'agachamento': 'ultWZbUMPL8',
-  'leg press': 'IZxyjW7MPJQ',
-  'hack': 'EdtaJRBqwes',
-  'cadeira extensora': 'YyvSfVjQeL0',
-  'cadeira flexora': 'ELOCsoDSmrg',
-  'stiff': '1uDiW5--rAE',
-  'afundo': 'QOVaHwm-Q6U',
-  'panturrilha': 'gwLzBJYoWlI',
-  'gluteo': 'SEdqd1n0cvg',
-  'agachamento bulgaro': '2C-uNgKwPLE',
-  'mesa flexora': 'ELOCsoDSmrg',
-  
-  // Ombros
-  'desenvolvimento': 'qEwKCR5JCog',
-  'elevacao lateral': '3VcKaXpzqRo',
-  'elevacao frontal': '1a4cH4Tx11s',
-  'remada alta': 'Q5ZtJEIqy4s',
-  'crucifixo inverso': 'T7Wc0cXwU-Q',
-  'desenvolvimento arnold': '6Z15_WdXmVw',
-  
-  // Braços
-  'rosca direta': 'ykJmrZ5v0Oo',
-  'rosca alternada': 'sAq_ocpRh_I',
-  'rosca martelo': 'TwD-YGVP4Bk',
-  'rosca scott': 'fIWP-FRFNU0',
-  'rosca concentrada': 'Jvj2wV0lNRY',
-  'triceps pulley': '2-LAMcpzODU',
-  'triceps testa': 'd_KZxkY_0cM',
-  'triceps frances': 'PpuZKWO4Pd0',
-  'mergulho': 'wjUmnZH528Y',
-  'triceps corda': 'vB7xnYqjmYk',
-  
-  // Abdômen
-  'abdominal': '1fbU_MkV7NE',
-  'prancha': 'ASdvN_XEl_c',
-  'elevacao pernas': 'JB2oyawG9KI',
-  'abdominal crunch': '1fbU_MkV7NE',
-};
-
-function buscarVideoExercicio(nomeExercicio: string): string {
-  const nome = nomeExercicio.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-  
-  // Buscar correspondência exata ou parcial
-  for (const [key, videoId] of Object.entries(VIDEO_DATABASE)) {
-    if (nome.includes(key) || key.includes(nome.split(' ')[0])) {
-      return `https://www.youtube.com/embed/${videoId}`;
+  try {
+    // Busca exata primeiro
+    let { data } = await supabase
+      .from('exercise_library')
+      .select('video_url')
+      .ilike('name', nome)
+      .limit(1)
+      .single();
+    
+    if (data?.video_url) {
+      console.log(`✓ Vídeo encontrado no banco para: ${nomeExercicio}`);
+      return data.video_url;
     }
+    
+    // Busca parcial pelo primeiro termo
+    const primeiraPalavra = nome.split(' ')[0];
+    const { data: partialData } = await supabase
+      .from('exercise_library')
+      .select('video_url')
+      .ilike('name', `%${primeiraPalavra}%`)
+      .limit(1)
+      .single();
+    
+    if (partialData?.video_url) {
+      console.log(`✓ Vídeo parcial encontrado para: ${nomeExercicio}`);
+      return partialData.video_url;
+    }
+    
+    // Logar exercício não encontrado
+    await supabase
+      .from('missing_exercises_log')
+      .insert({ exercise_name: nomeExercicio });
+    console.log(`⚠ Exercício não encontrado, logado para revisão: ${nomeExercicio}`);
+    
+  } catch (err) {
+    console.error(`Erro ao buscar vídeo para ${nomeExercicio}:`, err);
   }
   
-  // Fallback: vídeo genérico de exercício
-  return 'https://www.youtube.com/embed/IODxDxX7oi4';
+  // Fallback vazio - frontend buscará no banco
+  return '';
 }
 
 serve(async (req) => {
@@ -93,9 +60,30 @@ serve(async (req) => {
   try {
     const { biotipo, objetivo, nivel, diasTreino, tempo, equipamentos, limitacoes } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY não configurada');
+    }
+
+    // Criar cliente Supabase para acessar o banco
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+
+    // Buscar lista de exercícios disponíveis no banco
+    const { data: exerciciosDisponiveis } = await supabase
+      .from('exercise_library')
+      .select('name, muscle_group')
+      .order('muscle_group');
+    
+    const exerciciosPorGrupo: Record<string, string[]> = {};
+    if (exerciciosDisponiveis) {
+      for (const ex of exerciciosDisponiveis) {
+        if (!exerciciosPorGrupo[ex.muscle_group]) {
+          exerciciosPorGrupo[ex.muscle_group] = [];
+        }
+        exerciciosPorGrupo[ex.muscle_group].push(ex.name);
+      }
     }
 
     // Validar campos obrigatórios
@@ -105,6 +93,10 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const exerciciosListaFormatada = Object.entries(exerciciosPorGrupo)
+      .map(([grupo, exercicios]) => `${grupo}: ${exercicios.join(', ')}`)
+      .join('\n');
 
     const prompt = `Você é um personal trainer expert em criar treinos personalizados baseados em biotipo corporal.
 
@@ -116,6 +108,9 @@ PERFIL DO ALUNO:
 - Tempo por sessão: ${tempo} minutos
 - Equipamentos: ${equipamentos?.join(', ') || 'Academia completa'}
 ${limitacoes ? `- Limitações: ${limitacoes}` : ''}
+
+EXERCÍCIOS DISPONÍVEIS NO SISTEMA (USE PREFERENCIALMENTE ESTES NOMES EXATOS):
+${exerciciosListaFormatada}
 
 INSTRUÇÕES ESPECÍFICAS POR BIOTIPO:
 
@@ -167,6 +162,8 @@ CADA TREINO DEVE TER:
 - 6-8 exercícios principais com TODOS os campos
 - Alongamento final (5 min)
 - Tempo total estimado
+
+IMPORTANTE: USE OS NOMES EXATOS DOS EXERCÍCIOS DA LISTA ACIMA para garantir que os vídeos demonstrativos funcionem!
 
 FORMATO JSON EXATO:
 {
@@ -233,7 +230,8 @@ FORMATO JSON EXATO:
 }
 
 IMPORTANTE:
-- O campo videoUrl deve ficar vazio, será preenchido depois
+- O campo videoUrl deve ficar vazio, será preenchido automaticamente
+- USE OS NOMES EXATOS dos exercícios listados acima
 - Seja específico nas cargas sugeridas
 - Adapte volume/intensidade ao biotipo
 - Inclua 6-8 exercícios por treino
@@ -292,13 +290,13 @@ Responda APENAS com o JSON válido, sem markdown.`;
     
     const planoTreino = JSON.parse(jsonText);
 
-    console.log('Plano de treino gerado, adicionando vídeos demonstrativos...');
+    console.log('Plano de treino gerado, buscando vídeos demonstrativos no banco...');
 
-    // Adicionar vídeos demonstrativos do YouTube para cada exercício
+    // Buscar vídeos demonstrativos do banco para cada exercício
     for (const treino of planoTreino.treinos) {
       for (const exercicio of treino.exercicios) {
-        exercicio.videoUrl = buscarVideoExercicio(exercicio.nome);
-        console.log(`✓ Vídeo atribuído para ${exercicio.nome}: ${exercicio.videoUrl}`);
+        exercicio.videoUrl = await buscarVideoExercicio(supabase, exercicio.nome);
+        console.log(`→ ${exercicio.nome}: ${exercicio.videoUrl || 'não encontrado'}`);
       }
     }
 

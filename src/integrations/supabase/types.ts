@@ -38,6 +38,57 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_library: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          difficulty: string | null
+          id: string
+          muscle_group: string
+          name: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          muscle_group: string
+          name: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          muscle_group?: string
+          name?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
+      missing_exercises_log: {
+        Row: {
+          exercise_name: string
+          id: string
+          requested_at: string | null
+          resolved: boolean | null
+        }
+        Insert: {
+          exercise_name: string
+          id?: string
+          requested_at?: string | null
+          resolved?: boolean | null
+        }
+        Update: {
+          exercise_name?: string
+          id?: string
+          requested_at?: string | null
+          resolved?: boolean | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null

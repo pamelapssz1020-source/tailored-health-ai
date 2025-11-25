@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Clock, Target, Calendar, Play, Info, AlertCircle, Lightbulb, Edit2, X } from "lucide-react";
+import { Clock, Target, Calendar, Play, Info, AlertCircle, Lightbulb, Edit2, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useExerciseLibrary } from "@/hooks/useExerciseLibrary";
 
 interface WorkoutPlanViewProps {
   plano: any;
@@ -15,12 +16,40 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
   const [treinoAtivo, setTreinoAtivo] = useState('A');
   const [exercicioEmVideo, setExercicioEmVideo] = useState<any>(null);
   const [showTechnique, setShowTechnique] = useState<Record<number, boolean>>({});
+  const [videoUrl, setVideoUrl] = useState<string>('');
+  const [loadingVideo, setLoadingVideo] = useState(false);
+  const { getVideoUrl, getExerciseDetails } = useExerciseLibrary();
+  const [exerciseDescription, setExerciseDescription] = useState<string | null>(null);
 
   const toggleTechnique = (ordem: number) => {
     setShowTechnique(prev => ({ ...prev, [ordem]: !prev[ordem] }));
   };
 
   const treinoAtual = plano.treinos.find((t: any) => t.id === treinoAtivo);
+
+  // Buscar vídeo do banco quando abrir modal
+  const handleOpenVideo = useCallback(async (exercicio: any) => {
+    setExercicioEmVideo(exercicio);
+    setLoadingVideo(true);
+    setExerciseDescription(null);
+    
+    try {
+      // Buscar URL do vídeo no banco
+      const url = await getVideoUrl(exercicio.nome);
+      setVideoUrl(url);
+      
+      // Buscar descrição adicional do banco
+      const details = await getExerciseDetails(exercicio.nome);
+      if (details?.description) {
+        setExerciseDescription(details.description);
+      }
+    } catch (err) {
+      console.error('Erro ao buscar vídeo:', err);
+      setVideoUrl('');
+    } finally {
+      setLoadingVideo(false);
+    }
+  }, [getVideoUrl, getExerciseDetails]);
 
   return (
     <div className="space-y-6">
@@ -122,7 +151,7 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
                   </div>
                   <Button
                     size="sm"
-                    onClick={() => setExercicioEmVideo(exercicio)}
+                    onClick={() => handleOpenVideo(exercicio)}
                     className="bg-gradient-to-r from-pink-600 to-orange-600 shrink-0"
                   >
                     <Play size={16} />
@@ -260,12 +289,19 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
           </DialogHeader>
           {exercicioEmVideo && (
             <div className="space-y-4">
-              {exercicioEmVideo.videoUrl ? (
+              {loadingVideo ? (
+                <div className="aspect-video bg-muted/30 rounded-lg flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
+                    <p className="text-muted-foreground">Carregando vídeo...</p>
+                  </div>
+                </div>
+              ) : videoUrl ? (
                 <div className="aspect-video bg-black rounded-lg overflow-hidden">
                   <iframe
                     width="100%"
                     height="100%"
-                    src={exercicioEmVideo.videoUrl}
+                    src={videoUrl}
                     title={`Demonstração: ${exercicioEmVideo.nome}`}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -287,6 +323,17 @@ export default function WorkoutPlanView({ plano }: WorkoutPlanViewProps) {
                       Buscar no YouTube
                     </a>
                   </div>
+                </div>
+              )}
+              
+              {/* Descrição do banco de dados */}
+              {exerciseDescription && (
+                <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                  <h4 className="font-bold mb-2 flex items-center gap-2">
+                    <Info size={16} className="text-primary" />
+                    Dica de Execução
+                  </h4>
+                  <p className="text-sm text-muted-foreground">{exerciseDescription}</p>
                 </div>
               )}
               

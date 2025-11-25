@@ -43,6 +43,12 @@ export default {
         },
         neon: {
           cyan: "hsl(var(--neon-cyan))",
+          green: "hsl(var(--neon-green))",
+          purple: "hsl(var(--neon-purple))",
+        },
+        admin: {
+          accent: "hsl(var(--admin-accent))",
+          "accent-foreground": "hsl(var(--admin-accent-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

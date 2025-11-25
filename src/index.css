@@ -61,11 +61,19 @@ All colors MUST be HSL.
     --shadow-glow: 0 0 20px hsl(193 100% 50% / 0.7);
     --shadow-glow-intense: 0 0 30px hsl(193 100% 50% / 0.8), 0 0 60px hsl(193 100% 50% / 0.5);
     --shadow-glow-cyan: 0 0 25px hsl(180 100% 50% / 0.6);
+    --shadow-glow-purple: 0 0 25px hsl(270 100% 60% / 0.4);
     --shadow-neon-blue: 0 0 25px hsl(220 100% 50% / 0.4);
     --shadow-neon-electric: 0 0 25px hsl(193 100% 50% / 0.4);
     --shadow-neon-cyan: 0 0 25px hsl(180 100% 50% / 0.4);
     --shadow-card: 0 0 30px hsl(220 100% 50% / 0.3);
     --shadow-elevated: 0 10px 40px -5px hsl(220 100% 50% / 0.4);
+
+    /* Admin Theme - Amber/Warning accents */
+    --admin-accent: 38 92% 50%;
+    --admin-accent-foreground: 0 0% 100%;
+    --admin-glow: 0 0 25px hsl(38 92% 50% / 0.4);
+    --neon-green: 120 100% 50%;
+    --neon-purple: 270 100% 60%;
 
     /* Glassmorphism */
     --glass-bg: rgba(255, 255, 255, 0.05);

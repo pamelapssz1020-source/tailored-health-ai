@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Info, Dumbbell, Flame, Sparkles, Zap, Target } from "lucide-react";
+import { Info, Dumbbell, Flame, Sparkles, Zap, Target, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -91,6 +91,13 @@ export default function WorkoutSetup() {
       return;
     }
 
+    // Verificar autenticação
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Faça login para gerar seu plano de treino");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -113,15 +120,23 @@ export default function WorkoutSetup() {
         return;
       }
 
-      // Salvar no localStorage
-      localStorage.setItem('workout-plan', JSON.stringify({
-        plano: data.plano,
-        criadoEm: new Date().toISOString(),
-        biotipo,
-        objetivo
-      }));
+      // Salvar no Supabase
+      const { error: saveError } = await supabase
+        .from('workout_plans' as any)
+        .insert({
+          user_id: user.id,
+          plan_data: data.plano,
+          biotipo,
+          objetivo,
+        } as any);
 
-      toast.success("Plano de treino gerado com sucesso! 💪");
+      if (saveError) {
+        console.error('Erro ao salvar plano:', saveError);
+        toast.error("Plano gerado mas houve erro ao salvar.");
+      } else {
+        toast.success("Plano de treino gerado e salvo com sucesso! 💪");
+      }
+
       navigate('/workouts');
 
     } catch (error) {
@@ -357,7 +372,14 @@ export default function WorkoutSetup() {
                 disabled={!nivel || isLoading}
                 className="bg-gradient-to-r from-primary to-secondary"
               >
-                {isLoading ? "Gerando Plano..." : "Gerar Plano de Treino 💪"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Gerando Plano...
+                  </>
+                ) : (
+                  "Gerar Plano de Treino 💪"
+                )}
               </Button>
             </div>
           </div>

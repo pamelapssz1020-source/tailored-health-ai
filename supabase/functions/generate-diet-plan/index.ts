@@ -29,11 +29,22 @@ serve(async (req) => {
       );
     }
 
-    // Calcular TMB e gasto calórico
-    const isMale = true; // Poderia vir do perfil
+    // CORREÇÃO: Determinar gênero do usuário (vindo do perfil ou formulário)
+    const genero = userProfile.genero || userProfile.gender || 'masculino';
+    const isMale = genero.toLowerCase().includes('masculino') || genero.toLowerCase() === 'male';
+    
+    console.log(`Calculando TMB para gênero: ${genero} (isMale: ${isMale})`);
+
+    // Calcular TMB usando Mifflin-St Jeor (CORRIGIDO para gênero)
+    const peso = parseFloat(userProfile.pesoAtual);
+    const altura = parseFloat(userProfile.altura);
+    const idade = parseFloat(userProfile.idade);
+    
     const tmb = isMale 
-      ? (10 * userProfile.pesoAtual) + (6.25 * userProfile.altura) - (5 * userProfile.idade) + 5
-      : (10 * userProfile.pesoAtual) + (6.25 * userProfile.altura) - (5 * userProfile.idade) - 161;
+      ? (10 * peso) + (6.25 * altura) - (5 * idade) + 5
+      : (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+
+    console.log(`TMB calculado: ${tmb} (Peso: ${peso}, Altura: ${altura}, Idade: ${idade})`);
 
     const activityMultipliers: Record<string, number> = {
       "Sedentário (trabalho sentado, pouco movimento)": 1.2,
@@ -41,36 +52,56 @@ serve(async (req) => {
       "Moderadamente Ativo (exercícios 3-4x/semana)": 1.55,
       "Muito Ativo (exercícios intensos 5-6x/semana)": 1.725,
       "Extremamente Ativo (atleta, treina 2x/dia)": 1.9,
+      // Aliases comuns
+      "sedentario": 1.2,
+      "leve": 1.375,
+      "moderado": 1.55,
+      "intenso": 1.725,
+      "atleta": 1.9,
     };
 
-    const gastoTotal = tmb * (activityMultipliers[userProfile.nivelAtividade] || 1.55);
+    // Buscar multiplicador ou usar moderado como padrão
+    let multiplier = 1.55;
+    const nivelAtividade = userProfile.nivelAtividade?.toLowerCase() || '';
+    for (const [key, value] of Object.entries(activityMultipliers)) {
+      if (nivelAtividade.includes(key.toLowerCase()) || key.toLowerCase().includes(nivelAtividade)) {
+        multiplier = value;
+        break;
+      }
+    }
+
+    const gastoTotal = tmb * multiplier;
 
     let caloriasMeta = gastoTotal;
-    if (userProfile.objetivo.includes("Emagrecer")) {
+    const objetivo = userProfile.objetivo?.toLowerCase() || '';
+    if (objetivo.includes("emagrecer") || objetivo.includes("perder")) {
       caloriasMeta = gastoTotal - 500;
-    } else if (userProfile.objetivo.includes("Ganhar")) {
+    } else if (objetivo.includes("ganhar") || objetivo.includes("massa") || objetivo.includes("hipertrofia")) {
       caloriasMeta = gastoTotal + 400;
     }
+
+    console.log(`Gasto total: ${gastoTotal}, Meta calórica: ${caloriasMeta}`);
 
     const prompt = `Você é uma nutricionista esportiva brasileira expert. Crie um plano alimentar COMPLETO e PERSONALIZADO baseado nestas informações:
 
 PERFIL DO USUÁRIO:
+- Gênero: ${genero}
 - Objetivo: ${userProfile.objetivo}
-- Idade: ${userProfile.idade} anos
-- Peso atual: ${userProfile.pesoAtual} kg
-- Altura: ${userProfile.altura} cm
+- Idade: ${idade} anos
+- Peso atual: ${peso} kg
+- Altura: ${altura} cm
 ${userProfile.pesoObjetivo ? `- Peso objetivo: ${userProfile.pesoObjetivo} kg` : ''}
 - Nível de atividade: ${userProfile.nivelAtividade}
-- Restrições alimentares: ${userProfile.restricoes.join(', ') || 'Nenhuma'}
+- Restrições alimentares: ${Array.isArray(userProfile.restricoes) ? userProfile.restricoes.join(', ') : userProfile.restricoes || 'Nenhuma'}
 ${userProfile.restricoesOutras ? `- Outras restrições: ${userProfile.restricoesOutras}` : ''}
-- Alimentos favoritos: ${userProfile.alimentosAmados}
-- Alimentos que evita: ${userProfile.alimentosOdiados}
+- Alimentos favoritos: ${userProfile.alimentosAmados || userProfile.alimentosAma || 'Não informado'}
+- Alimentos que evita: ${userProfile.alimentosOdiados || userProfile.alimentosOdeia || 'Não informado'}
 - Número de refeições desejado: ${userProfile.numRefeicoes}
-- Horário de acordar: ${userProfile.horarioAcordar}
-- Horário de dormir: ${userProfile.horarioDormir}
+- Horário de acordar: ${userProfile.horarioAcordar || '07:00'}
+- Horário de dormir: ${userProfile.horarioDormir || '22:00'}
 ${userProfile.preferenciasHorarios ? `- Preferências de horários: ${userProfile.preferenciasHorarios}` : ''}
 ${userProfile.condicoesSaude ? `- Condições de saúde: ${userProfile.condicoesSaude}` : ''}
-- Tempo disponível para cozinhar: ${userProfile.tempoPreparacao}
+- Tempo disponível para cozinhar: ${userProfile.tempoPreparacao || 'Não informado'}
 ${userProfile.suplementos ? `- Suplementos atuais: ${userProfile.suplementos}` : ''}
 
 CÁLCULOS:
@@ -203,6 +234,8 @@ IMPORTANTE: Responda APENAS o JSON, sem explicações ou markdown.`;
     jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     
     const dietPlan = JSON.parse(jsonText);
+
+    console.log('Plano alimentar gerado com sucesso');
 
     return new Response(JSON.stringify({ success: true, dietPlan }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

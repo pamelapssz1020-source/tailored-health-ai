@@ -1,21 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Award, Target, Calendar, Zap } from "lucide-react";
+import { TrendingUp, TrendingDown, Award, Target, Calendar, Zap, Loader2 } from "lucide-react";
+import { useUserProgress } from "@/hooks/useUserProgress";
+import { CheckInDialog } from "@/components/Progress/CheckInDialog";
+import { WeightChart } from "@/components/Progress/WeightChart";
+import { MeasurementsComparison } from "@/components/Progress/MeasurementsComparison";
 
 const ProgressPage = () => {
+  const { 
+    progress, 
+    loading, 
+    getWeightHistory, 
+    getLatestMeasurements, 
+    getFirstMeasurements,
+    fetchProgress 
+  } = useUserProgress();
+
   const achievements = [
     { name: "Primeira Semana", desc: "Complete 7 dias consecutivos", unlocked: true, icon: "🔥" },
     { name: "Scanner Master", desc: "Escaneie 50 alimentos", unlocked: true, icon: "📸" },
     { name: "Iron Pumper", desc: "Complete 20 treinos", unlocked: false, icon: "💪", progress: 65 },
     { name: "Consistency King", desc: "30 dias de streak", unlocked: false, icon: "👑", progress: 23 },
-  ];
-
-  const bodyMetrics = [
-    { label: "Peso", current: "72.5kg", change: "-2.5kg", trend: "down", target: "70kg" },
-    { label: "Gordura Corporal", current: "18%", change: "-3%", trend: "down", target: "15%" },
-    { label: "Massa Muscular", current: "60kg", change: "+1.5kg", trend: "up", target: "62kg" },
-    { label: "IMC", current: "24.1", change: "-0.8", trend: "down", target: "23" },
   ];
 
   const weeklyProgress = [
@@ -28,15 +34,38 @@ const ProgressPage = () => {
     { day: "Dom", calories: 0, workouts: 0, completed: false },
   ];
 
+  // Get data for charts
+  const weightHistory = getWeightHistory(90);
+  const latestMeasurements = getLatestMeasurements();
+  const firstMeasurements = getFirstMeasurements();
+
+  // Calculate stats from progress
+  const latestWeight = progress.find(p => p.weight_kg)?.weight_kg;
+  const firstWeight = [...progress]
+    .filter(p => p.weight_kg)
+    .sort((a, b) => new Date(a.record_date).getTime() - new Date(b.record_date).getTime())[0]?.weight_kg;
+  const weightChange = latestWeight && firstWeight ? latestWeight - firstWeight : null;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 gradient-hero bg-clip-text text-transparent">
-            Seu Progresso
-          </h1>
-          <p className="text-muted-foreground">Acompanhe sua evolução e conquistas</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold mb-2 gradient-hero bg-clip-text text-transparent">
+              Seu Progresso
+            </h1>
+            <p className="text-muted-foreground">Acompanhe sua evolução e conquistas</p>
+          </div>
+          <CheckInDialog onSuccess={fetchProgress} />
         </div>
 
         {/* Overall Stats */}
@@ -44,24 +73,38 @@ const ProgressPage = () => {
           <Card className="shadow-glow border-primary/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground">Dias Consecutivos</p>
-                <Zap className="h-4 w-4 text-neon-green" />
+                <p className="text-sm text-muted-foreground">Check-ins Realizados</p>
+                <Zap className="h-4 w-4 text-neon-cyan" />
               </div>
-              <p className="text-3xl font-bold mb-1">7</p>
-              <Progress value={70} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-2">70% da meta semanal</p>
+              <p className="text-3xl font-bold mb-1">{progress.length}</p>
+              <Progress value={Math.min(progress.length * 10, 100)} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-2">
+                {progress.length >= 10 ? 'Ótimo progresso!' : `Faltam ${10 - progress.length} para a primeira meta`}
+              </p>
             </CardContent>
           </Card>
 
           <Card className="shadow-glow-purple border-secondary/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground">Total de Treinos</p>
-                <Target className="h-4 w-4 text-neon-purple" />
+                <p className="text-sm text-muted-foreground">Peso Atual</p>
+                <Target className="h-4 w-4 text-neon-cyan" />
               </div>
-              <p className="text-3xl font-bold mb-1">13</p>
-              <Progress value={65} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-2">Meta: 20 treinos/mês</p>
+              <p className="text-3xl font-bold mb-1">
+                {latestWeight ? `${latestWeight} kg` : '-'}
+              </p>
+              {weightChange !== null && (
+                <Badge 
+                  variant={weightChange <= 0 ? 'default' : 'secondary'}
+                  className="gap-1"
+                >
+                  {weightChange <= 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                  {weightChange > 0 ? '+' : ''}{weightChange.toFixed(1)} kg
+                </Badge>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">
+                {weightChange !== null ? 'Desde o primeiro registro' : 'Registre seu peso'}
+              </p>
             </CardContent>
           </Card>
 
@@ -78,35 +121,18 @@ const ProgressPage = () => {
           </Card>
         </div>
 
-        {/* Body Metrics */}
-        <Card className="mb-8 shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Métricas Corporais
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {bodyMetrics.map((metric, i) => (
-                <div key={i} className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground mb-1">{metric.label}</p>
-                  <div className="flex items-center gap-2 mb-2">
-                    <p className="text-2xl font-bold">{metric.current}</p>
-                    <Badge 
-                      variant={metric.trend === "down" ? "default" : "secondary"}
-                      className="gap-1"
-                    >
-                      {metric.trend === "down" ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
-                      {metric.change}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Meta: {metric.target}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Weight Chart */}
+        <div className="mb-8">
+          <WeightChart data={weightHistory} />
+        </div>
+
+        {/* Measurements Comparison */}
+        <div className="mb-8">
+          <MeasurementsComparison 
+            latest={latestMeasurements} 
+            first={firstMeasurements} 
+          />
+        </div>
 
         {/* Weekly Progress */}
         <Card className="mb-8 shadow-card">

@@ -1,28 +1,85 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Dumbbell, Plus, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import WorkoutPlanView from "@/components/Workouts/WorkoutPlanView";
 
 export default function Workouts() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [workoutPlan, setWorkoutPlan] = useState<any>(null);
+  const [savedPlanId, setSavedPlanId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Recuperar plano salvo
-    const savedPlan = localStorage.getItem('workout-plan');
-    if (savedPlan) {
-      setWorkoutPlan(JSON.parse(savedPlan));
-    }
+    const loadWorkoutPlan = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Buscar plano mais recente do Supabase
+        const { data: plans, error } = await supabase
+          .from('workout_plans' as any)
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (error) {
+          console.error('Erro ao buscar plano:', error);
+        } else if (plans && plans.length > 0) {
+          const latestPlan = plans[0] as any;
+          setWorkoutPlan(latestPlan.plan_data);
+          setSavedPlanId(latestPlan.id);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar plano:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWorkoutPlan();
   }, []);
 
-  return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {!workoutPlan ? (
-          // Sem plano - Mostrar CTA
+  const handleNewPlan = async () => {
+    // Deletar plano antigo se existir
+    if (savedPlanId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('workout_plans' as any)
+          .delete()
+          .eq('id', savedPlanId);
+      }
+    }
+    
+    setWorkoutPlan(null);
+    setSavedPlanId(null);
+    navigate('/workouts/setup');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando seu plano de treino...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!workoutPlan) {
+    return (
+      <div className="min-h-screen bg-background p-4 md:p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
           <div className="text-center py-20">
             <Card className="p-12 max-w-2xl mx-auto">
               <div className="text-6xl mb-6">💪</div>
@@ -56,15 +113,35 @@ export default function Workouts() {
                 onClick={() => navigate('/workouts/setup')}
                 className="bg-gradient-to-r from-primary to-secondary text-lg h-14 px-8"
               >
-                <Sparkles size={20} />
+                <Sparkles size={20} className="mr-2" />
                 Criar Meu Plano Personalizado
               </Button>
             </Card>
           </div>
-        ) : (
-          // Com plano - Mostrar visualização
-          <WorkoutPlanView plano={workoutPlan.plano} />
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Meus Treinos</h1>
+            <p className="text-muted-foreground">Seu plano personalizado de exercícios</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleNewPlan}
+            className="gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Gerar Novo Plano
+          </Button>
+        </div>
+
+        <WorkoutPlanView plano={workoutPlan} />
       </div>
     </div>
   );

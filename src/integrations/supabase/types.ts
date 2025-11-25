@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      diet_plans: {
+        Row: {
+          created_at: string | null
+          id: string
+          plan_data: Json
+          profile_data: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          plan_data: Json
+          profile_data?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          plan_data?: Json
+          profile_data?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null
@@ -86,6 +110,33 @@ export type Database = {
           updated_at?: string
           user_id?: string
           workout_frequency?: string | null
+        }
+        Relationships: []
+      }
+      workout_plans: {
+        Row: {
+          biotipo: string | null
+          created_at: string | null
+          id: string
+          objetivo: string | null
+          plan_data: Json
+          user_id: string
+        }
+        Insert: {
+          biotipo?: string | null
+          created_at?: string | null
+          id?: string
+          objetivo?: string | null
+          plan_data: Json
+          user_id: string
+        }
+        Update: {
+          biotipo?: string | null
+          created_at?: string | null
+          id?: string
+          objetivo?: string | null
+          plan_data?: Json
+          user_id?: string
         }
         Relationships: []
       }

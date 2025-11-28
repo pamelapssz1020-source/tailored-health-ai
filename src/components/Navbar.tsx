@@ -4,7 +4,7 @@ import { Activity } from "lucide-react";
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-border/50">
+    <nav className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-border/50 bg-background/95 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Activity className="h-8 w-8 text-primary" />
@@ -32,7 +32,7 @@ const Navbar = () => {
           <Button variant="outline" size="sm" asChild>
             <Link to="/login">Entrar</Link>
           </Button>
-          <Button variant="hero" size="sm" asChild>
+          <Button variant="default" size="sm" asChild>
             <Link to="/dashboard">Ver App</Link>
           </Button>
         </div>

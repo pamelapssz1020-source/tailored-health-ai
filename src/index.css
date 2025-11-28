@@ -8,146 +8,132 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Deep Black Backgrounds */
-    --background: 0 0% 4%;
-    --background-secondary: 0 0% 7%;
-    --foreground: 0 0% 100%;
-    --foreground-secondary: 0 0% 88%;
+    /* White & Green Health Theme */
+    --background: 0 0% 100%;
+    --background-secondary: 120 50% 98%;
+    --foreground: 0 0% 10%;
+    --foreground-secondary: 0 0% 29%;
 
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
 
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
 
-    /* Metallic Blue Primary */
-    --primary: 220 100% 50%;
+    /* Green Health Primary */
+    --primary: 165 95% 40%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 220 100% 60%;
-    --metallic-blue: 220 100% 50%;
+    --primary-glow: 165 95% 50%;
     
-    /* Electric Blue Secondary */
-    --secondary: 193 100% 50%;
+    /* Light Green Secondary */
+    --secondary: 123 38% 57%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 193 100% 60%;
-    --electric-blue: 193 100% 50%;
+    --secondary-glow: 123 38% 67%;
 
-    /* Neon Cyan Accent */
-    --accent: 180 100% 50%;
+    /* Cyan Accent */
+    --accent: 165 95% 45%;
     --accent-foreground: 0 0% 100%;
-    --neon-cyan: 180 100% 50%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 63%;
+    --muted: 120 10% 94%;
+    --muted-foreground: 0 0% 45%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 193 100% 50% / 0.2;
-    --input: 0 0% 15%;
-    --ring: 220 100% 50%;
+    --border: 120 20% 90%;
+    --input: 120 50% 98%;
+    --ring: 165 95% 40%;
 
     --radius: 0.75rem;
 
-    /* Neon Metallic Gradients */
-    --gradient-primary: linear-gradient(45deg, hsl(220 100% 50%), hsl(193 100% 50%));
-    --gradient-secondary: linear-gradient(135deg, hsl(193 100% 50%), hsl(180 100% 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 4%), hsl(0 0% 7%));
-    --gradient-neon: linear-gradient(135deg, hsl(220 100% 50%), hsl(193 100% 50%), hsl(180 100% 50%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 7% / 0.8), hsl(0 0% 7% / 0.95));
-    --gradient-radial: radial-gradient(ellipse at top right, hsl(220 100% 50% / 0.15), transparent);
+    /* Green Health Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(165 95% 40%), hsl(123 38% 57%));
+    --gradient-secondary: linear-gradient(135deg, hsl(123 38% 57%), hsl(139 49% 70%));
+    --gradient-hero: linear-gradient(135deg, hsl(120 50% 98%), hsl(0 0% 100%));
+    --gradient-soft: linear-gradient(135deg, hsl(120 50% 97%), hsl(120 40% 95%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(120 50% 99%));
+    --gradient-radial: radial-gradient(ellipse at top right, hsl(165 95% 40% / 0.08), transparent);
     
-    /* Neon Glow Shadows */
-    --shadow-glow: 0 0 20px hsl(193 100% 50% / 0.7);
-    --shadow-glow-intense: 0 0 30px hsl(193 100% 50% / 0.8), 0 0 60px hsl(193 100% 50% / 0.5);
-    --shadow-glow-cyan: 0 0 25px hsl(180 100% 50% / 0.6);
-    --shadow-glow-purple: 0 0 25px hsl(270 100% 60% / 0.4);
-    --shadow-neon-blue: 0 0 25px hsl(220 100% 50% / 0.4);
-    --shadow-neon-electric: 0 0 25px hsl(193 100% 50% / 0.4);
-    --shadow-neon-cyan: 0 0 25px hsl(180 100% 50% / 0.4);
-    --shadow-card: 0 0 30px hsl(220 100% 50% / 0.3);
-    --shadow-elevated: 0 10px 40px -5px hsl(220 100% 50% / 0.4);
+    /* Soft Green Shadows */
+    --shadow-glow: 0 4px 16px hsl(165 95% 40% / 0.12);
+    --shadow-glow-intense: 0 8px 24px hsl(165 95% 40% / 0.18);
+    --shadow-glow-cyan: 0 4px 16px hsl(165 95% 45% / 0.15);
+    --shadow-card: 0 2px 8px hsl(165 95% 40% / 0.08);
+    --shadow-elevated: 0 10px 40px -5px hsl(165 95% 40% / 0.15);
 
     /* Admin Theme - Amber/Warning accents */
     --admin-accent: 38 92% 50%;
     --admin-accent-foreground: 0 0% 100%;
-    --admin-glow: 0 0 25px hsl(38 92% 50% / 0.4);
-    --neon-green: 120 100% 50%;
+    --neon-green: 165 95% 40%;
     --neon-purple: 270 100% 60%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(0, 212, 255, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 200, 150, 0.2);
     --glass-blur: 20px;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 220 100% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 10%;
+    --sidebar-primary: 165 95% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 7%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 193 100% 50% / 0.2;
-    --sidebar-ring: 220 100% 50%;
+    --sidebar-accent: 120 50% 98%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 120 20% 90%;
+    --sidebar-ring: 165 95% 40%;
   }
 
   .dark {
-    /* Same as light mode for consistent neon theme */
-    --background: 0 0% 4%;
-    --background-secondary: 0 0% 7%;
-    --foreground: 0 0% 100%;
-    --foreground-secondary: 0 0% 88%;
+    /* Same as light mode for consistent clean theme */
+    --background: 0 0% 100%;
+    --background-secondary: 120 50% 98%;
+    --foreground: 0 0% 10%;
+    --foreground-secondary: 0 0% 29%;
 
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
 
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 220 100% 50%;
+    --primary: 165 95% 40%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 220 100% 60%;
-    --metallic-blue: 220 100% 50%;
+    --primary-glow: 165 95% 50%;
 
-    --secondary: 193 100% 50%;
+    --secondary: 123 38% 57%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 193 100% 60%;
-    --electric-blue: 193 100% 50%;
+    --secondary-glow: 123 38% 67%;
 
-    --accent: 180 100% 50%;
+    --accent: 165 95% 45%;
     --accent-foreground: 0 0% 100%;
-    --neon-cyan: 180 100% 50%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 63%;
+    --muted: 120 10% 94%;
+    --muted-foreground: 0 0% 45%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 193 100% 50% / 0.2;
-    --input: 0 0% 15%;
-    --ring: 220 100% 50%;
+    --border: 120 20% 90%;
+    --input: 120 50% 98%;
+    --ring: 165 95% 40%;
 
-    --shadow-glow: 0 0 20px hsl(193 100% 50% / 0.7);
-    --shadow-glow-intense: 0 0 30px hsl(193 100% 50% / 0.8), 0 0 60px hsl(193 100% 50% / 0.5);
-    --shadow-glow-cyan: 0 0 25px hsl(180 100% 50% / 0.6);
-    --shadow-neon-blue: 0 0 25px hsl(220 100% 50% / 0.4);
-    --shadow-neon-electric: 0 0 25px hsl(193 100% 50% / 0.4);
-    --shadow-neon-cyan: 0 0 25px hsl(180 100% 50% / 0.4);
-    --shadow-card: 0 0 30px hsl(220 100% 50% / 0.3);
+    --shadow-glow: 0 4px 16px hsl(165 95% 40% / 0.12);
+    --shadow-glow-intense: 0 8px 24px hsl(165 95% 40% / 0.18);
+    --shadow-glow-cyan: 0 4px 16px hsl(165 95% 45% / 0.15);
+    --shadow-card: 0 2px 8px hsl(165 95% 40% / 0.08);
     
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(0, 212, 255, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 200, 150, 0.2);
     --glass-blur: 20px;
     
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 220 100% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 10%;
+    --sidebar-primary: 165 95% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 7%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 193 100% 50% / 0.2;
-    --sidebar-ring: 220 100% 50%;
+    --sidebar-accent: 120 50% 98%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 120 20% 90%;
+    --sidebar-ring: 165 95% 40%;
   }
 }
 
@@ -232,10 +218,10 @@ All colors MUST be HSL.
 
   @keyframes neon-pulse {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(193 100% 50% / 0.5), 0 0 40px hsl(193 100% 50% / 0.3);
+      box-shadow: 0 0 20px hsl(165 95% 40% / 0.3), 0 0 40px hsl(165 95% 40% / 0.15);
     }
     50% {
-      box-shadow: 0 0 30px hsl(193 100% 50% / 0.8), 0 0 60px hsl(193 100% 50% / 0.5);
+      box-shadow: 0 0 30px hsl(165 95% 40% / 0.5), 0 0 60px hsl(165 95% 40% / 0.25);
     }
   }
 
@@ -262,10 +248,10 @@ All colors MUST be HSL.
   position: absolute;
   width: 4px;
   height: 4px;
-  background: hsl(199 100% 50%);
+  background: hsl(165 95% 40%);
   border-radius: 50%;
   animation: float-particles 8s infinite ease-in-out;
-  box-shadow: 0 0 10px hsl(199 100% 50% / 0.8);
+  box-shadow: 0 0 10px hsl(165 95% 40% / 0.6);
 }
 
   .glass-effect {

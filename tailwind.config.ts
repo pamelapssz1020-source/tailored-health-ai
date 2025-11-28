@@ -35,14 +35,7 @@ export default {
           foreground: "hsl(var(--secondary-foreground))",
           glow: "hsl(var(--secondary-glow))",
         },
-        metallic: {
-          blue: "hsl(var(--metallic-blue))",
-        },
-        electric: {
-          blue: "hsl(var(--electric-blue))",
-        },
         neon: {
-          cyan: "hsl(var(--neon-cyan))",
           green: "hsl(var(--neon-green))",
           purple: "hsl(var(--neon-purple))",
         },

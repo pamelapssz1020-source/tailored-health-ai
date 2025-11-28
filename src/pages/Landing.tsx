@@ -22,7 +22,8 @@ import {
   Pill,
   Star,
   Sparkles,
-  Shield
+  Shield,
+  Salad
 } from "lucide-react";
 import heroImage from "@/assets/hero-fitness-happy.jpg";
 import foodScannerImage from "@/assets/food-scanner.jpg";
@@ -45,22 +46,11 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section - Neon Metallic with Video Background */}
-      <section className="relative pt-32 pb-32 px-4 overflow-hidden">
-        {/* Video Background */}
+      {/* Hero Section - Minimalista */}
+      <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-background">
+        {/* Background subtle com gradiente */}
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
-            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'%3E%3Crect fill='%230A0A0A' width='1920' height='1080'/%3E%3C/svg%3E"
-          >
-            <source src="https://player.vimeo.com/external/473636202.hd.mp4?s=c1e86c97c69cf87d7b0b1f6d48f9e2fd8b2b6ec2&profile_id=175" type="video/mp4" />
-          </video>
-          {/* Overlay gradiente para legibilidade */}
-          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-primary/20" />
+          <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
         </div>
         
         {/* Animated Particles Background */}
@@ -79,54 +69,62 @@ const Landing = () => {
           ))}
         </div>
         
-        <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-[60%_40%] gap-16 items-center">
-            <div className="animate-fade-in">
-              <Badge className="mb-6 neon-pulse bg-primary/20 text-primary border-primary/50">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Sua Jornada Única Começa Aqui
-              </Badge>
-              
-              <h1 className="text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                SEU PERSONAL TRAINER E{" "}
-                <span className="text-primary drop-shadow-[0_0_30px_rgba(0,212,255,0.8)]">
-                  NUTRICIONISTA 24H
-                </span>
-              </h1>
-              
-              <p className="text-2xl text-muted-foreground mb-4 leading-relaxed">
-                Experiência 100% Individual - Seu Corpo, Seu Plano, Seus Resultados
-              </p>
-              
-              <p className="text-lg text-foreground/80 mb-8">
-                Tecnologia que Entende Você • Resultados Reais, Acompanhamento Real
-              </p>
-              
-              <div className="flex flex-wrap gap-4 mb-12">
+        <div className="container mx-auto relative z-10 text-center max-w-6xl">
+          {/* Título Principal */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-20 leading-tight uppercase animate-fade-in">
+            SEU PERSONAL TRAINER E<br />
+            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,212,255,0.6)]">
+              NUTRICIONISTA 24H
+            </span>
+          </h1>
+          
+          {/* Action Cards Grid */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Card Personal Trainer */}
+            <Card className="group hover:shadow-elevated transition-all duration-300 hover:-translate-y-3 border-primary/30 hover:border-primary/60 bg-card/80 backdrop-blur-sm overflow-hidden">
+              <CardContent className="p-8 text-center">
+                <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Dumbbell className="h-12 w-12 text-primary group-hover:rotate-12 transition-transform" />
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-3">Fale com seu Personal</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Treinos personalizados com IA avançada
+                </p>
+                
                 <Button 
-                  variant="default" 
-                  size="xl" 
-                  asChild 
-                  className="group neon-pulse shadow-glow-intense hover:shadow-glow-intense"
+                  className="w-full group/btn gradient-primary text-white font-semibold hover:shadow-glow transition-all"
+                  size="lg"
+                  onClick={() => navigate('/workouts')}
                 >
-                  <Link to="/signup">
-                    COMEÇAR MINHA TRANSFORMAÇÃO
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  Começar Treino
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
             
-            <div className="relative animate-slide-up flex justify-center items-center">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-              <div className="relative p-4">
-                <img 
-                  src={heroImage} 
-                  alt="Pessoa feliz treinando na academia com o Health AI Coach" 
-                  className="rounded-2xl shadow-glow-intense border-2 border-primary/30 hover:scale-105 transition-transform duration-500 w-full max-w-md mx-auto block"
-                />
-              </div>
-            </div>
+            {/* Card Nutricionista IA */}
+            <Card className="group hover:shadow-elevated transition-all duration-300 hover:-translate-y-3 border-secondary/30 hover:border-secondary/60 bg-card/80 backdrop-blur-sm overflow-hidden">
+              <CardContent className="p-8 text-center">
+                <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Salad className="h-12 w-12 text-secondary group-hover:rotate-12 transition-transform" />
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-3">Fale com a IA de Nutrição</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Plano alimentar 100% personalizado
+                </p>
+                
+                <Button 
+                  className="w-full group/btn gradient-secondary text-white font-semibold hover:shadow-glow transition-all"
+                  size="lg"
+                  onClick={() => navigate('/nutrition')}
+                >
+                  Criar Dieta
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

@@ -235,18 +235,35 @@ export default function WorkoutSetup() {
         nivelEstresse
       };
 
+      console.log('🚀 Enviando dados para edge function:', dadosCompletos);
+      
       const { data, error } = await supabase.functions.invoke('generate-workout-plan', {
         body: dadosCompletos
       });
 
-      if (error) throw error;
+      console.log('📥 Resposta da edge function:', { data, error });
+
+      if (error) {
+        console.error('❌ Erro na invocação:', error);
+        throw error;
+      }
 
       if (data?.error) {
+        console.error('❌ Erro retornado pela função:', data.error);
         toast.error(data.error);
         return;
       }
 
+      if (!data?.plano) {
+        console.error('❌ Resposta sem plano de treino:', data);
+        toast.error("Erro: Plano não foi gerado corretamente");
+        return;
+      }
+
+      console.log('✅ Plano recebido com sucesso:', data.plano);
+
       // Salvar no Supabase
+      console.log('💾 Salvando plano no banco de dados para user:', user.id);
       const { error: saveError } = await supabase
         .from('workout_plans')
         .insert({
@@ -257,17 +274,22 @@ export default function WorkoutSetup() {
         });
 
       if (saveError) {
-        console.error('Erro ao salvar plano:', saveError);
-        toast.error("Plano gerado mas houve erro ao salvar.");
+        console.error('❌ Erro ao salvar plano:', saveError);
+        toast.error(`Plano gerado mas houve erro ao salvar: ${saveError.message}`);
       } else {
+        console.log('✅ Plano salvo com sucesso no banco!');
         toast.success("🎉 Plano de treino criado com sucesso!");
       }
 
       navigate('/workouts');
 
-    } catch (error) {
-      console.error('Erro ao gerar plano:', error);
-      toast.error("Erro ao gerar plano de treino. Tente novamente.");
+    } catch (error: any) {
+      console.error('❌ Erro completo ao gerar plano:', error);
+      console.error('❌ Stack:', error?.stack);
+      console.error('❌ Message:', error?.message);
+      
+      const errorMessage = error?.message || error?.error || "Erro desconhecido ao gerar plano de treino";
+      toast.error(`Erro: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import FoodScannerModal from "./FoodScannerModal";
 import AnalysisLoading from "./AnalysisLoading";
 import FoodResults from "./FoodResults";
@@ -15,28 +16,84 @@ const FoodScanner = () => {
   const [capturedImage, setCapturedImage] = useState<string>("");
   const [foodData, setFoodData] = useState<any>(null);
 
-  const handleCapture = (imageData: string) => {
+  const handleCapture = async (imageData: string) => {
     setCapturedImage(imageData);
     setState("analyzing");
+    
+    try {
+      console.log('📸 Enviando imagem para análise...');
+      
+      const { data, error } = await supabase.functions.invoke('analyze-food-image', {
+        body: { imageData }
+      });
+
+      if (error) {
+        console.error('❌ Erro na análise:', error);
+        throw error;
+      }
+
+      console.log('✅ Análise recebida:', data);
+
+      // Transform API response to component format
+      const foodData = {
+        name: data.food_name,
+        confidence: Math.round(data.confidence * 100),
+        emoji: getFoodEmoji(data.food_name),
+        calories: data.calories_total,
+        carbs: data.macros.carbs_g,
+        protein: data.macros.protein_g,
+        fat: data.macros.fat_g,
+        fiber: data.macros.fiber_g,
+        sugar: data.macros.sugar_g,
+        estimatedWeight: data.estimated_weight_g,
+        description: data.description,
+        micronutrients: data.micronutrients,
+        alternatives: data.alternatives?.map((alt: any) => alt.name) || [],
+      };
+
+      setFoodData(foodData);
+      setState("results");
+
+    } catch (error) {
+      console.error('❌ Erro ao analisar imagem:', error);
+      toast({
+        title: "Erro na análise",
+        description: error instanceof Error ? error.message : "Não foi possível analisar a imagem. Tente novamente.",
+        variant: "destructive",
+      });
+      setState("idle");
+    }
   };
 
-  const handleAnalysisComplete = () => {
-    // Mock data - in production, this would come from AI analysis
-    const mockFoodData = {
-      name: "Maçã Verde",
-      confidence: 92,
-      emoji: "🍏",
-      calories: 52,
-      carbs: 14,
-      protein: 0.3,
-      fat: 0.2,
-      fiber: 2.4,
-      sugar: 10,
-      pairings: ["Iogurte natural", "Canela", "Mel"],
-      alternatives: ["Maçã vermelha", "Pera"],
-    };
-    setFoodData(mockFoodData);
-    setState("results");
+  const getFoodEmoji = (foodName: string): string => {
+    const name = foodName.toLowerCase();
+    if (name.includes('maçã') || name.includes('apple')) return '🍎';
+    if (name.includes('banana')) return '🍌';
+    if (name.includes('laranja') || name.includes('orange')) return '🍊';
+    if (name.includes('uva') || name.includes('grape')) return '🍇';
+    if (name.includes('morango') || name.includes('strawberry')) return '🍓';
+    if (name.includes('melancia') || name.includes('watermelon')) return '🍉';
+    if (name.includes('maracujá') || name.includes('passion fruit')) return '🥭';
+    if (name.includes('abacaxi') || name.includes('pineapple')) return '🍍';
+    if (name.includes('pera') || name.includes('pear')) return '🍐';
+    if (name.includes('pêssego') || name.includes('peach')) return '🍑';
+    if (name.includes('cereja') || name.includes('cherry')) return '🍒';
+    if (name.includes('kiwi')) return '🥝';
+    if (name.includes('abacate') || name.includes('avocado')) return '🥑';
+    if (name.includes('tomate') || name.includes('tomato')) return '🍅';
+    if (name.includes('brócolis') || name.includes('broccoli')) return '🥦';
+    if (name.includes('cenoura') || name.includes('carrot')) return '🥕';
+    if (name.includes('batata') || name.includes('potato')) return '🥔';
+    if (name.includes('arroz') || name.includes('rice')) return '🍚';
+    if (name.includes('pão') || name.includes('bread')) return '🍞';
+    if (name.includes('ovo') || name.includes('egg')) return '🥚';
+    if (name.includes('frango') || name.includes('chicken')) return '🍗';
+    if (name.includes('carne') || name.includes('meat')) return '🥩';
+    if (name.includes('peixe') || name.includes('fish')) return '🐟';
+    if (name.includes('queijo') || name.includes('cheese')) return '🧀';
+    if (name.includes('leite') || name.includes('milk')) return '🥛';
+    if (name.includes('iogurte') || name.includes('yogurt')) return '🥛';
+    return '🍽️'; // Default food emoji
   };
 
   const handleCorrect = () => {
@@ -76,7 +133,7 @@ const FoodScanner = () => {
         );
 
       case "analyzing":
-        return <AnalysisLoading onComplete={handleAnalysisComplete} />;
+        return <AnalysisLoading />;
 
       case "results":
         return (

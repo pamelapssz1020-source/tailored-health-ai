@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import SofiaAssistant from "@/components/SofiaAssistant";
 import { 
   Camera, 
   Dumbbell, 
@@ -23,7 +26,9 @@ import {
   Star,
   Sparkles,
   Shield,
-  Salad
+  Salad,
+  Mic,
+  Search
 } from "lucide-react";
 import heroImage from "@/assets/hero-fitness-happy.jpg";
 import foodScannerImage from "@/assets/food-scanner.jpg";
@@ -32,6 +37,8 @@ import aiAssistantImage from "@/assets/ai-assistant.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [sofiaOpen, setSofiaOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   
   const handleCycleClick = () => {
     const config = localStorage.getItem('menstrual-cycle-config');
@@ -58,12 +65,59 @@ const Landing = () => {
         
         <div className="container mx-auto max-w-6xl text-center relative z-10">
           {/* Main Title with Animated Gradient */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-16 leading-tight font-display">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-8 leading-tight font-display">
             SEU PERSONAL TRAINER E{" "}
             <span className="block mt-4 text-gradient-animated animate-gradient-shift">
               NUTRICIONISTA 24H
             </span>
           </h1>
+
+          {/* FLOATING ACTION BAR - Sofia Assistant */}
+          <div className="mb-16 max-w-2xl mx-auto">
+            <div className="glass-card group cursor-pointer relative overflow-hidden rounded-2xl p-1 hover:scale-[1.02] transition-all duration-300">
+              {/* Animated border glow - Cyan */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-50 blur-xl group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <div className="relative bg-background/80 backdrop-blur-xl rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 border border-primary/50">
+                    <MessageSquare className="h-6 w-6 text-primary drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-xl font-bold text-gradient-cyan">Fale com sua Assistente Pessoal</h3>
+                    <p className="text-xs text-muted-foreground">Sofia • Gerente de Sucesso do Cliente</p>
+                  </div>
+                  <div className="ml-auto">
+                    <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      placeholder="Pergunte sobre sua dieta, treino ou plano..."
+                      className="pl-10 bg-background/50 border-primary/30 focus:border-primary/60 h-12"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={() => setSofiaOpen(true)}
+                    />
+                  </div>
+                  <Button 
+                    size="icon"
+                    className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/80 to-secondary/80 hover:from-primary hover:to-secondary shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all"
+                    onClick={() => setSofiaOpen(true)}
+                  >
+                    <Mic className="h-5 w-5 animate-pulse" />
+                  </Button>
+                </div>
+                
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  💡 Tire dúvidas sobre planos, preços, como funciona o scanner, cancelamento...
+                </p>
+              </div>
+            </div>
+          </div>
           
           {/* Action Cards - Holographic AI Panels */}
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -154,11 +208,16 @@ const Landing = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Scanner Inteligente */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* CARD 1: Scanner Inteligente - VISUAL MELHORADO */}
             <Card className="group hover:shadow-glow transition-all duration-500 border-primary/30 hover:border-primary/60 overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative overflow-hidden h-64 bg-black">
+                <div className="relative overflow-hidden h-72 bg-black">
+                  {/* Holographic overlay effect */}
+                  <div className="absolute inset-0 z-10 pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+                  </div>
+                  
                   <video
                     autoPlay
                     loop
@@ -169,67 +228,43 @@ const Landing = () => {
                   >
                     <source src="https://cdn.coverr.co/videos/coverr-person-scanning-food-with-phone-9348/1080p.mp4" type="video/mp4" />
                   </video>
-                  {/* Overlay sutil com glow azul */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Floating hologram elements */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute bottom-20 left-8 text-xs font-mono text-primary bg-black/50 px-2 py-1 rounded backdrop-blur-sm animate-pulse">
+                      250 kcal
+                    </div>
+                    <div className="absolute bottom-32 right-12 text-xs font-mono text-secondary bg-black/50 px-2 py-1 rounded backdrop-blur-sm animate-pulse" style={{ animationDelay: '500ms' }}>
+                      28g Carbs
+                    </div>
+                    <div className="absolute top-24 left-12 text-xs font-mono text-accent bg-black/50 px-2 py-1 rounded backdrop-blur-sm animate-pulse" style={{ animationDelay: '1s' }}>
+                      15g Protein
+                    </div>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <Badge className="mb-4 bg-primary text-primary-foreground">
-                    Tecnologia Patenteada
+                <div className="p-6 bg-gradient-to-b from-background via-background to-primary/5">
+                  <Badge className="mb-4 bg-gradient-to-r from-primary to-secondary text-white border-0 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+                    🔬 Visão IA Avançada
                   </Badge>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-lg bg-primary/20 text-primary">
-                      <Camera className="h-6 w-6" />
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 text-primary border border-primary/50">
+                      <Camera className="h-7 w-7 drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]" />
                     </div>
-                    <h3 className="text-2xl font-bold">Scanner Inteligente</h3>
+                    <h3 className="text-2xl font-bold text-gradient-cyan">Visão Nutricional IA</h3>
                   </div>
-                  <p className="text-muted-foreground mb-4">
-                    Tire foto, saiba tudo - IA que identifica 10.000+ alimentos instantaneamente
+                  <p className="text-muted-foreground mb-4 leading-relaxed">
+                    Scanner Hiper-Preciso • Análise forense de alimentos com hologramas de nutrientes flutuando
                   </p>
                   <div className="flex items-center gap-2 text-sm text-primary">
-                    <Sparkles className="h-4 w-4" />
-                    <span>Precisão de 98% em análise nutricional</span>
+                    <Sparkles className="h-4 w-4 animate-pulse" />
+                    <span className="font-semibold">Gemini Vision Pro • 98% de precisão</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Treinos Personalizados */}
-            <Card className="group hover:shadow-glow transition-all duration-500 border-primary/30 hover:border-primary/60 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative overflow-hidden h-64 bg-black">
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    poster={workoutImage}
-                  >
-                    <source src="https://cdn.coverr.co/videos/coverr-personal-trainer-helping-woman-exercise/1080p.mp4" type="video/mp4" />
-                  </video>
-                  {/* Overlay sutil com glow azul */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-lg bg-primary/20 text-primary">
-                      <Dumbbell className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-2xl font-bold">Treinos Personalizados</h3>
-                  </div>
-                  <p className="text-muted-foreground mb-4">
-                    Cada exercício pensado para SEU corpo, SEUS objetivos, SEUS resultados
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-primary">
-                    <Brain className="h-4 w-4" />
-                    <span>Ajustes em tempo real pela IA</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Assistente 24/7 */}
-            <Card className="group hover:shadow-glow transition-all duration-500 border-primary/30 hover:border-primary/60 overflow-hidden">
+            {/* CARD 2: Assistente 24/7 - NEON BRILHO INTENSO */}
+            <Card className="group hover:shadow-glow transition-all duration-500 border-secondary/30 hover:border-secondary/60 overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative overflow-hidden h-64">
                   <img 
@@ -786,6 +821,9 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      {/* Sofia Assistant Modal */}
+      <SofiaAssistant isOpen={sofiaOpen} onClose={() => setSofiaOpen(false)} />
     </div>
   );
 };

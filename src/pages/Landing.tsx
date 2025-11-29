@@ -65,56 +65,48 @@ const Landing = () => {
         
         <div className="container mx-auto max-w-6xl text-center relative z-10">
           {/* Main Title with Animated Gradient */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-8 leading-tight font-display">
+          <h1 className="text-3xl md:text-5xl font-black mb-6 leading-tight font-display">
             SEU PERSONAL TRAINER E{" "}
-            <span className="block mt-4 text-gradient-animated animate-gradient-shift">
+            <span className="block mt-2 text-gradient-animated animate-gradient-shift">
               NUTRICIONISTA 24H
             </span>
           </h1>
 
-          {/* FLOATING ACTION BAR - Sofia Assistant */}
-          <div className="mb-16 max-w-2xl mx-auto">
-            <div className="glass-card group cursor-pointer relative overflow-hidden rounded-2xl p-1 hover:scale-[1.02] transition-all duration-300">
+          {/* FLOATING SEARCH BAR - Sofia Assistant (Minimalist) */}
+          <div className="mb-12 max-w-2xl mx-auto">
+            <div 
+              className="glass-card group cursor-pointer relative overflow-hidden rounded-full p-1 hover:scale-[1.02] transition-all duration-300"
+              onClick={() => setSofiaOpen(true)}
+            >
               {/* Animated border glow - Cyan */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-50 blur-xl group-hover:opacity-100 transition-opacity duration-300" />
               
-              <div className="relative bg-background/80 backdrop-blur-xl rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 border border-primary/50">
-                    <MessageSquare className="h-6 w-6 text-primary drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-xl font-bold text-gradient-cyan">Fale com sua Assistente Pessoal</h3>
-                    <p className="text-xs text-muted-foreground">Sofia • Gerente de Sucesso do Cliente</p>
-                  </div>
-                  <div className="ml-auto">
-                    <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-                  </div>
+              <div className="relative bg-background/80 backdrop-blur-xl rounded-full px-6 py-3 flex items-center gap-3">
+                {/* Icon Left */}
+                <MessageSquare className="h-5 w-5 text-primary drop-shadow-[0_0_10px_rgba(0,240,255,0.8)] flex-shrink-0" />
+                
+                {/* Search Input */}
+                <div className="flex-1">
+                  <Input 
+                    placeholder="Pergunte para sua IA..."
+                    className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 h-8 px-0 placeholder:text-muted-foreground/60"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setSofiaOpen(true)}
+                  />
                 </div>
                 
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="Pergunte sobre sua dieta, treino ou plano..."
-                      className="pl-10 bg-background/50 border-primary/30 focus:border-primary/60 h-12"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onFocus={() => setSofiaOpen(true)}
-                    />
-                  </div>
-                  <Button 
-                    size="icon"
-                    className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/80 to-secondary/80 hover:from-primary hover:to-secondary shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all"
-                    onClick={() => setSofiaOpen(true)}
-                  >
-                    <Mic className="h-5 w-5 animate-pulse" />
-                  </Button>
-                </div>
-                
-                <p className="text-xs text-muted-foreground mt-3 text-center">
-                  💡 Tire dúvidas sobre planos, preços, como funciona o scanner, cancelamento...
-                </p>
+                {/* Mic Button Right */}
+                <Button 
+                  size="icon"
+                  className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/80 to-secondary/80 hover:from-primary hover:to-secondary shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all flex-shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSofiaOpen(true);
+                  }}
+                >
+                  <Mic className="h-4 w-4 animate-pulse" />
+                </Button>
               </div>
             </div>
           </div>

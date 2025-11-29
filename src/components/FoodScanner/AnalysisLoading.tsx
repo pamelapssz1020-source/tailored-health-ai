@@ -3,7 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, Sparkles } from "lucide-react";
 
 interface AnalysisLoadingProps {
-  onComplete: () => void;
+  onComplete?: () => void;
 }
 
 const loadingSteps = [
@@ -33,7 +33,7 @@ const AnalysisLoading = ({ onComplete }: AnalysisLoadingProps) => {
       if (currentStep < loadingSteps.length - 1) {
         setCurrentStep((prev) => prev + 1);
       } else {
-        onComplete();
+        onComplete?.();
       }
     }, step.duration);
 

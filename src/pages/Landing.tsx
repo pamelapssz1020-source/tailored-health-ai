@@ -46,85 +46,100 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section - Minimalista */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-background">
-        {/* Background subtle com gradiente */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
+      {/* Hero Section - Futuristic */}
+      <section className="relative min-h-screen flex items-center justify-center px-4 pt-20 particles-bg grid-bg overflow-hidden">
+        {/* Animated particles overlay */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 w-2 h-2 bg-primary rounded-full animate-pulse-glow" />
+          <div className="absolute top-40 right-20 w-1 h-1 bg-secondary rounded-full animate-pulse-glow" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-32 left-1/4 w-1.5 h-1.5 bg-accent rounded-full animate-pulse-glow" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-primary rounded-full animate-pulse-glow" style={{ animationDelay: '3s' }} />
         </div>
         
-        {/* Animated Particles Background */}
-        <div className="particles-bg">
-          {Array.from({ length: 30 }).map((_, i) => (
-            <div
-              key={i}
-              className="particle"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 8}s`,
-                animationDuration: `${6 + Math.random() * 4}s`,
-              }}
-            />
-          ))}
-        </div>
-        
-        <div className="container mx-auto relative z-10 text-center max-w-6xl">
-          {/* Título Principal */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-20 leading-tight uppercase animate-fade-in">
-            SEU PERSONAL TRAINER E<br />
-            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,212,255,0.6)]">
+        <div className="container mx-auto max-w-6xl text-center relative z-10">
+          {/* Main Title with Animated Gradient */}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-16 leading-tight font-display">
+            SEU PERSONAL TRAINER E{" "}
+            <span className="block mt-4 text-gradient-animated animate-gradient-shift">
               NUTRICIONISTA 24H
             </span>
           </h1>
           
-          {/* Action Cards Grid */}
+          {/* Action Cards - Holographic AI Panels */}
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Card Personal Trainer */}
-            <Card className="group hover:shadow-elevated transition-all duration-300 hover:-translate-y-3 border-primary/30 hover:border-primary/60 bg-card/80 backdrop-blur-sm overflow-hidden">
-              <CardContent className="p-8 text-center">
-                <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Dumbbell className="h-12 w-12 text-primary group-hover:rotate-12 transition-transform" />
+            {/* Personal Trainer Card - Cyan Theme */}
+            <div className="glass-card group cursor-pointer relative overflow-hidden rounded-2xl">
+              {/* Animated border glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+              
+              <CardContent className="p-8 relative z-10">
+                {/* Holographic Icon Orb */}
+                <div className="mb-6 relative">
+                  <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center relative">
+                    {/* Outer glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl group-hover:bg-primary/40 transition-all duration-300" />
+                    {/* Icon container */}
+                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/50 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
+                      <Dumbbell className="h-10 w-10 text-primary drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]" />
+                    </div>
+                  </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold mb-3">Fale com seu Personal</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
+                <h3 className="text-2xl font-bold mb-3 font-heading text-gradient-cyan">
+                  Fale com seu Personal
+                </h3>
+                <p className="text-foreground-secondary mb-6 text-sm">
                   Treinos personalizados com IA avançada
                 </p>
                 
+                {/* Laser Button */}
                 <Button 
-                  className="w-full group/btn gradient-primary text-white font-semibold hover:shadow-glow transition-all"
+                  className="w-full group btn-gradient-cyan font-semibold text-black hover:scale-105 transition-all duration-300"
                   size="lg"
-                  onClick={() => navigate('/workouts')}
+                  onClick={() => navigate('/workouts/setup')}
                 >
-                  Começar Treino
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                  <span className="relative z-10">Começar Treino</span>
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform relative z-10" />
                 </Button>
               </CardContent>
-            </Card>
-            
-            {/* Card Nutricionista IA */}
-            <Card className="group hover:shadow-elevated transition-all duration-300 hover:-translate-y-3 border-secondary/30 hover:border-secondary/60 bg-card/80 backdrop-blur-sm overflow-hidden">
-              <CardContent className="p-8 text-center">
-                <div className="mb-6 mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Salad className="h-12 w-12 text-secondary group-hover:rotate-12 transition-transform" />
+            </div>
+
+            {/* Nutrition AI Card - Green Theme */}
+            <div className="glass-card-green group cursor-pointer relative overflow-hidden rounded-2xl">
+              {/* Animated border glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+              
+              <CardContent className="p-8 relative z-10">
+                {/* Holographic Icon Orb */}
+                <div className="mb-6 relative">
+                  <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center relative">
+                    {/* Outer glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-secondary/20 blur-xl group-hover:bg-secondary/40 transition-all duration-300" />
+                    {/* Icon container */}
+                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-secondary/30 to-secondary/10 border border-secondary/50 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
+                      <Salad className="h-10 w-10 text-secondary drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]" />
+                    </div>
+                  </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold mb-3">Fale com a IA de Nutrição</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
+                <h3 className="text-2xl font-bold mb-3 font-heading text-gradient-green">
+                  Fale com a IA de Nutrição
+                </h3>
+                <p className="text-foreground-secondary mb-6 text-sm">
                   Plano alimentar 100% personalizado
                 </p>
                 
+                {/* Laser Button */}
                 <Button 
-                  className="w-full group/btn gradient-secondary text-white font-semibold hover:shadow-glow transition-all"
+                  className="w-full group btn-gradient-green font-semibold text-black hover:scale-105 transition-all duration-300"
                   size="lg"
-                  onClick={() => navigate('/nutrition')}
+                  onClick={() => navigate('/nutritional-anamnesis')}
                 >
-                  Criar Dieta
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                  <span className="relative z-10">Criar Dieta</span>
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform relative z-10" />
                 </Button>
               </CardContent>
-            </Card>
+            </div>
           </div>
         </div>
       </section>

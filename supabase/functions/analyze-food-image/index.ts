@@ -14,6 +14,7 @@ serve(async (req) => {
     const { imageData } = await req.json();
     
     if (!imageData) {
+      console.error('❌ Imagem não fornecida no body');
       return new Response(
         JSON.stringify({ error: "Imagem não fornecida" }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -22,13 +23,15 @@ serve(async (req) => {
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
+      console.error('❌ LOVABLE_API_KEY não configurada');
       throw new Error('LOVABLE_API_KEY não configurada');
     }
 
-    console.log('🔍 Analisando imagem com Gemini 2.5 Pro Vision...');
-
     // Remove data URL prefix if present
     const base64Image = imageData.replace(/^data:image\/\w+;base64,/, '');
+    
+    console.log('🔍 Analisando imagem com Gemini 2.5 Pro Vision...');
+    console.log('📊 Tamanho da imagem (base64):', base64Image.length, 'caracteres');
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -37,7 +40,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-pro',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
@@ -52,7 +55,7 @@ serve(async (req) => {
 4. Se houver múltiplos alimentos, liste todos
 5. Se houver dúvida, liste as 3 possibilidades mais prováveis com suas respectivas probabilidades
 
-Retorne APENAS um JSON válido neste formato exato:
+IMPORTANTE: Retorne APENAS um objeto JSON válido, sem texto adicional, sem markdown, sem formatação. O JSON deve seguir EXATAMENTE este formato:
 {
   "food_name": "Nome exato do alimento",
   "confidence": 0.98,
@@ -82,7 +85,8 @@ Retorne APENAS um JSON válido neste formato exato:
             ]
           }
         ],
-        max_tokens: 2000
+        max_tokens: 1500,
+        temperature: 0.3
       })
     });
 
@@ -109,20 +113,41 @@ Retorne APENAS um JSON válido neste formato exato:
 
     const content = data.choices[0]?.message?.content;
     if (!content) {
+      console.error('❌ Resposta vazia da IA');
       throw new Error('Resposta vazia da IA');
     }
 
-    // Parse JSON from response
+    console.log('📝 Conteúdo bruto recebido (primeiros 500 chars):', content.substring(0, 500));
+
+    // Parse JSON from response with better error handling
     let analysisResult;
     try {
       // Remove markdown code blocks if present
-      const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      let cleanContent = content.trim();
+      
+      // Remove ```json and ``` markers
+      cleanContent = cleanContent.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+      
+      // Try to extract JSON if there's text before/after
+      const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleanContent = jsonMatch[0];
+      }
+      
       analysisResult = JSON.parse(cleanContent);
+      console.log('✅ JSON parseado com sucesso');
       console.log('📊 Análise completa:', JSON.stringify(analysisResult, null, 2));
+      
+      // Validate required fields
+      if (!analysisResult.food_name || !analysisResult.calories_total || !analysisResult.macros) {
+        console.error('❌ JSON inválido - campos obrigatórios faltando:', analysisResult);
+        throw new Error('Resposta da IA não contém todos os campos obrigatórios');
+      }
+      
     } catch (parseError) {
-      console.error('Erro ao parsear JSON:', parseError);
-      console.error('Conteúdo recebido:', content);
-      throw new Error('Formato de resposta inválido da IA');
+      console.error('❌ Erro ao parsear JSON:', parseError);
+      console.error('📄 Conteúdo completo recebido:', content);
+      throw new Error('Formato de resposta inválido da IA. O modelo não retornou JSON válido.');
     }
 
     return new Response(

@@ -58,7 +58,41 @@ serve(async (req) => {
   }
 
   try {
-    const { biotipo, objetivo, nivel, diasTreino, tempo, equipamentos, limitacoes } = await req.json();
+    const body = await req.json();
+    console.log('📦 Dados recebidos:', JSON.stringify(body, null, 2));
+    
+    // Extrair dados do novo formato extenso do questionário
+    const { 
+      biotipo, 
+      objetivo, 
+      experiencia, // ao invés de "nivel"
+      diasTreino, 
+      tempoTreino, // ao invés de "tempo"
+      equipamentos, 
+      limitacoes,
+      idade,
+      genero,
+      pesoAtual,
+      altura,
+      pesoObjetivo,
+      imc,
+      esportePraticado,
+      condicionamento,
+      horarioPreferido,
+      localTreino,
+      detalhesLimitacoes,
+      condicoesSaude,
+      liberacaoMedica,
+      tipoTreino,
+      exerciciosFavoritos,
+      exerciciosEvitar,
+      intensidade,
+      motivacao,
+      rotinaTrabalho,
+      qualidadeSono,
+      nivelEstresse
+    } = body;
+    
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -87,12 +121,25 @@ serve(async (req) => {
     }
 
     // Validar campos obrigatórios
-    if (!biotipo || !objetivo || !nivel || !diasTreino || !tempo) {
+    if (!biotipo || !objetivo || !experiencia || !diasTreino || !tempoTreino) {
+      const missingFields = [];
+      if (!biotipo) missingFields.push('biotipo');
+      if (!objetivo) missingFields.push('objetivo');
+      if (!experiencia) missingFields.push('experiencia');
+      if (!diasTreino) missingFields.push('diasTreino');
+      if (!tempoTreino) missingFields.push('tempoTreino');
+      
+      console.error('❌ Campos obrigatórios faltando:', missingFields);
       return new Response(
-        JSON.stringify({ error: "Campos obrigatórios faltando" }),
+        JSON.stringify({ error: `Campos obrigatórios faltando: ${missingFields.join(', ')}` }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    // Mapear experiencia para nivel (compatibilidade)
+    const nivel = experiencia === 'nunca' || experiencia === 'iniciante' ? 'iniciante' :
+                  experiencia === 'intermediario' ? 'intermediario' : 'avancado';
+    const tempo = tempoTreino;
 
     const exerciciosListaFormatada = Object.entries(exerciciosPorGrupo)
       .map(([grupo, exercicios]) => `${grupo}: ${exercicios.join(', ')}`)
@@ -100,14 +147,50 @@ serve(async (req) => {
 
     const prompt = `Você é um personal trainer expert em criar treinos personalizados baseados em biotipo corporal.
 
-PERFIL DO ALUNO:
+PERFIL COMPLETO DO ALUNO:
+
+OBJETIVO E FÍSICO:
 - Biotipo: ${biotipo}
 - Objetivo: ${objetivo}
+- Idade: ${idade} anos
+- Gênero: ${genero}
+- Peso atual: ${pesoAtual}kg
+- Altura: ${altura}cm
+${pesoObjetivo ? `- Peso objetivo: ${pesoObjetivo}kg` : ''}
+- IMC: ${imc}
+
+EXPERIÊNCIA E CONDICIONAMENTO:
+- Experiência: ${experiencia}
 - Nível: ${nivel}
+${esportePraticado ? `- Esporte praticado: ${esportePraticado}` : ''}
+- Condicionamento físico: ${condicionamento}/5
+
+DISPONIBILIDADE:
 - Dias de treino disponíveis: ${diasTreino}
 - Tempo por sessão: ${tempo} minutos
-- Equipamentos: ${equipamentos?.join(', ') || 'Academia completa'}
-${limitacoes ? `- Limitações: ${limitacoes}` : ''}
+- Horário preferido: ${horarioPreferido}
+- Local: ${localTreino}
+
+EQUIPAMENTOS:
+${equipamentos?.join(', ') || 'Academia completa'}
+
+LIMITAÇÕES E SAÚDE:
+${limitacoes?.length ? `- Limitações físicas: ${limitacoes.join(', ')}` : '- Sem limitações físicas'}
+${detalhesLimitacoes ? `- Detalhes: ${detalhesLimitacoes}` : ''}
+${condicoesSaude?.length ? `- Condições de saúde: ${condicoesSaude.join(', ')}` : ''}
+- Liberação médica: ${liberacaoMedica}
+
+PREFERÊNCIAS:
+- Tipo de treino: ${tipoTreino}
+${exerciciosFavoritos ? `- Exercícios favoritos: ${exerciciosFavoritos}` : ''}
+${exerciciosEvitar ? `- Exercícios a evitar: ${exerciciosEvitar}` : ''}
+- Intensidade desejada: ${intensidade}/5
+
+ESTILO DE VIDA:
+- Motivação principal: ${motivacao}
+- Rotina de trabalho: ${rotinaTrabalho}
+- Qualidade do sono: ${qualidadeSono}/5
+- Nível de estresse: ${nivelEstresse}/5
 
 EXERCÍCIOS DISPONÍVEIS NO SISTEMA (USE PREFERENCIALMENTE ESTES NOMES EXATOS):
 ${exerciciosListaFormatada}
@@ -311,11 +394,12 @@ Responda APENAS com o JSON válido, sem markdown.`;
     );
 
   } catch (error) {
-    console.error('Erro ao gerar plano de treino:', error);
+    console.error('❌ ERRO CRÍTICO na edge function:', error);
+    console.error('❌ Stack completo:', error instanceof Error ? error.stack : 'N/A');
+    
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Erro desconhecido",
-        details: error instanceof Error ? error.stack : undefined
+        error: error instanceof Error ? error.message : "Erro desconhecido ao gerar plano de treino"
       }),
       { 
         status: 500, 

@@ -16,19 +16,65 @@ const FoodScanner = () => {
   const [capturedImage, setCapturedImage] = useState<string>("");
   const [foodData, setFoodData] = useState<any>(null);
 
+  // Compress image before sending to edge function
+  const compressImage = async (imageData: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Resize to max 1024px while maintaining aspect ratio
+        const MAX_SIZE = 1024;
+        if (width > height && width > MAX_SIZE) {
+          height = (height / width) * MAX_SIZE;
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width = (width / height) * MAX_SIZE;
+          height = MAX_SIZE;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Compress to JPEG with 0.7 quality
+        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+        console.log('📉 Imagem comprimida:', {
+          original: imageData.length,
+          compressed: compressed.length,
+          reduction: `${Math.round((1 - compressed.length / imageData.length) * 100)}%`
+        });
+        resolve(compressed);
+      };
+      img.src = imageData;
+    });
+  };
+
   const handleCapture = async (imageData: string) => {
     setCapturedImage(imageData);
     setState("analyzing");
     
     try {
-      console.log('📸 Enviando imagem para análise...');
+      console.log('📸 Comprimindo e enviando imagem para análise...');
+      
+      // Compress image before sending
+      const compressedImage = await compressImage(imageData);
       
       const { data, error } = await supabase.functions.invoke('analyze-food-image', {
-        body: { imageData }
+        body: { imageData: compressedImage }
       });
 
       if (error) {
         console.error('❌ Erro na análise:', error);
+        
+        // Handle specific errors
+        if (error.message?.includes('413') || error.message?.includes('Payload')) {
+          throw new Error('Imagem muito grande. Por favor, tire uma foto mais próxima do alimento.');
+        }
         throw error;
       }
 
@@ -56,9 +102,27 @@ const FoodScanner = () => {
 
     } catch (error) {
       console.error('❌ Erro ao analisar imagem:', error);
+      
+      let errorMessage = "Não foi possível analisar a imagem. Tente novamente.";
+      let errorTitle = "Erro na análise";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        if (error.message.includes('grande') || error.message.includes('413')) {
+          errorTitle = "Imagem muito grande";
+        } else if (error.message.includes('Rate limit') || error.message.includes('429')) {
+          errorTitle = "Limite excedido";
+          errorMessage = "Muitas tentativas. Aguarde alguns segundos e tente novamente.";
+        } else if (error.message.includes('Credits') || error.message.includes('402')) {
+          errorTitle = "Créditos insuficientes";
+          errorMessage = "Os créditos da IA acabaram. Contate o suporte.";
+        }
+      }
+      
       toast({
-        title: "Erro na análise",
-        description: error instanceof Error ? error.message : "Não foi possível analisar a imagem. Tente novamente.",
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive",
       });
       setState("idle");

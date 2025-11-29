@@ -94,14 +94,14 @@ const Signup = () => {
               birth_date: formData.birthDate,
               gender: formData.gender,
             },
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
 
         if (error) throw error;
         
         toast.success("Conta criada com sucesso! Verifique seu e-mail.");
-        setStep(3);
+        navigate("/verify-email", { state: { email: formData.email } });
       } catch (error: any) {
         toast.error(error.message || "Erro ao criar conta");
       } finally {

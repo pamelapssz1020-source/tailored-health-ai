@@ -1,22 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Activity, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   
   const [formData, setFormData] = useState({
-    email: "",
+    email: location.state?.email || "",
     password: "",
   });
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,20 +45,26 @@ const Login = () => {
         password: formData.password,
       });
 
-      if (error) throw error;
-
-      // Update last login (commented out due to type issues - will be fixed when types regenerate)
-      // if (data.user) {
-      //   await supabase
-      //     .from("profiles")
-      //     .update({ last_login: new Date().toISOString() })
-      //     .eq("user_id", data.user.id);
-      // }
+      if (error) {
+        // Better error messages
+        if (error.message.includes("Email not confirmed")) {
+          toast.error("Sua conta ainda não foi ativada. Verifique seu email.", {
+            description: "Não recebeu o email? Volte para a tela de cadastro.",
+          });
+        } else if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou senha incorretos", {
+            description: "Verifique suas credenciais e tente novamente.",
+          });
+        } else {
+          toast.error(error.message || "Erro ao fazer login");
+        }
+        throw error;
+      }
 
       toast.success("Login realizado com sucesso!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao fazer login");
+      // Error already handled above
     } finally {
       setLoading(false);
     }
